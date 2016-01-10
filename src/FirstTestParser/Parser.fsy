@@ -1,0 +1,14 @@
+﻿%{
+//open ast module
+}%
+
+//%start startRule
+
+//%token listOfTokens
+
+//%type resultType
+
+%%
+
+//list of rules
+//startRule: ...
