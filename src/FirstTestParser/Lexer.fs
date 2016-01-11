@@ -228,15 +228,17 @@ and _fslex_readIdentifier  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
 # 64 "Lexer.fsl"
-                                        match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
+                                        
+                                           match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
                                                | Some(kw) -> kw
                                                | None     -> ID(lexeme lexbuf) 
-# 234 "Lexer.fs"
+                                       
+# 236 "Lexer.fs"
           )
   | 1 -> ( 
-# 67 "Lexer.fsl"
+# 69 "Lexer.fsl"
                                          EOF 
-# 239 "Lexer.fs"
+# 241 "Lexer.fs"
           )
   | _ -> failwith "readIdentifier"
 

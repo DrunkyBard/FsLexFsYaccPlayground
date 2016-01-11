@@ -61,7 +61,9 @@ rule lex = parse
   | dot  { DOT }
   | eof  { EOF }
 and readIdentifier = parse
-    | identifier        {match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
+    | identifier        {
+                            match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
                                 | Some(kw) -> kw
-                                | None     -> ID(lexeme lexbuf) }
+                                | None     -> ID(lexeme lexbuf) 
+                        }
     | eof               { EOF }
