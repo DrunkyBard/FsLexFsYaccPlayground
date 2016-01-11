@@ -1,10 +1,20 @@
 ﻿%{
 //open ast module
+module SqlParser
+open SqlQuery
+
 }%
 
 //%start startRule
+%start start
 
 //%token listOfTokens
+
+%token <int> INT
+%token <string> STRING
+%token <bool> BOOL
+%token 
+
 
 //%type resultType
 

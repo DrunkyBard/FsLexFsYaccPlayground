@@ -1,7 +1,24 @@
 ﻿{
 //some F# code: open libraries, helper functions, etc
+module SqlLexer
+open SqlParser
+open SqlQuery
+
+let lexeme = LexBuffer.LexemeString
 }
 
 //RegEx patterns
+let whitespace = ' ' | '\t'
+let newLine = "\r\n" | "\r" | "\n"
+let columns = "(\*{1}|.*?\.?.*\,?)"
+let keywords = "SELECT|FROM|INNER JOIN|LEFT JOIN|RIGHT JOIN|ON|WHERE|AND|OR"
+let ops = "\<|\<=|\>|\>=|="
+let int = ['-' '+']? ['0'-'9']+
 
 //rule listOfRules
+
+rule lex = parse
+	| whitespace		{ lex readbuf }
+	| newLine			{ lexbuf.StartPos <- lexbuf.StartPos.NextLine }
+	| int				{ INT(int.Parse(lexeme lexbuf)) }
+	| eof				{ EOF }
