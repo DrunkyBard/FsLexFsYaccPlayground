@@ -57,15 +57,16 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <None Include="App.config" />
-    <Content Include="packages.config" />
     <FsYacc Include="Parser.fsy">
-      <OtherFlags>--module Parser</OtherFlags>
+      <OtherFlags>--module SqlParser</OtherFlags>
     </FsYacc>
     <FsLex Include="Lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
+    <None Include="App.config" />
+    <Content Include="packages.config" />
     <Compile Include="SqlQuery.fs" />
+    <Compile Include="Parser.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

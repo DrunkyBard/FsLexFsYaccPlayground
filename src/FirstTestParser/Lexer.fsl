@@ -2,23 +2,68 @@
 //some F# code: open libraries, helper functions, etc
 module SqlLexer
 open SqlParser
+open System
 open SqlQuery
+open Microsoft.FSharp.Text.Lexing
 
 let lexeme = LexBuffer.LexemeString
+
+let keywords =   
+    [   
+        "SELECT", SELECT;   
+        "FROM", FROM;   
+        "WHERE", WHERE;   
+        "ORDER", ORDER;   
+        "BY", BY;   
+        "JOIN", JOIN;   
+        "INNER", INNER;   
+        "LEFT", LEFT;   
+        "RIGHT", RIGHT;   
+        "ASC", ASC;   
+        "DESC", DESC;   
+        "AND", AND;   
+        "OR", OR;   
+        "ON", ON;
+        "TRUE", BOOL(true);
+        "FALSE", BOOL(false);
+    ] |> Map.ofList   
+ 
+let ops =   
+    [   
+        "=",    EQ;   
+        "<",    LT;   
+        "<=",   LE;   
+        ">",    GT;   
+        ">=",   GE;   
+        "<>",   NEQ;
+    ] |> Map.ofList  
 }
 
 //RegEx patterns
 let whitespace = ' ' | '\t'
 let newLine = "\r\n" | "\r" | "\n"
-let columns = "(\*{1}|.*?\.?.*\,?)"
-let keywords = "SELECT|FROM|INNER JOIN|LEFT JOIN|RIGHT JOIN|ON|WHERE|AND|OR"
-let ops = "\<|\<=|\>|\>=|="
-let int = ['-' '+']? ['0'-'9']+
+let char = "[a-z A-Z]"
+let digit = "[0-9]"   
+let identifier  = char(char|digit|['-' '_' '.'])*
+let comma = ","
+let dot = "."
+let ops = "<" | "<=" | ">" | ">=" | "=" | "<>"
+let int = ['-' '+']? digit+
 
 //rule listOfRules
 
 rule lex = parse
-	| whitespace		{ lex readbuf }
-	| newLine			{ lexbuf.StartPos <- lexbuf.StartPos.NextLine }
-	| int				{ INT(int.Parse(lexeme lexbuf)) }
-	| eof				{ EOF }
+  | whitespace  { lex lexbuf }
+  | newLine  { lexbuf.StartPos <- lexbuf.StartPos.NextLine }
+  | int  { INT(int.Parse(lexeme lexbuf)) }
+  | identifier  { readIdentifier lexbuf }
+  | ops  { ops.[lexeme lexbuf] }
+  | comma  { COMMA }
+  | dot  { DOT }
+  | eof  { EOF }
+
+and readIdentifier = parse
+    | identifier        {match Map.tryFind (identifier.ToUpper()) keywords with
+                                | Some(kw) -> kw
+                                | None     -> ID(identifier) }
+    | eof               { EOF }

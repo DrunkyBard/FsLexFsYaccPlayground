@@ -1,24 +1,24 @@
 ﻿%{
-//open ast module
-module SqlParser
 open SqlQuery
+open System
+open Microsoft.FSharp.Text.Lexing
+%}
 
-}%
-
-//%start startRule
 %start start
-
-//%token listOfTokens
 
 %token <int> INT
 %token <string> STRING
 %token <bool> BOOL
-%token 
+%token SELECT FROM WHERE ORDER BY 
+%token JOIN INNER LEFT RIGHT 
+%token ASC DESC AND OR ON
+%token EQ LT LE GT GE NEQ
+%token DOT COMMA
+%token EOF
 
-
-//%type resultType
+%type <Int32> start
 
 %%
 
-//list of rules
-//startRule: ...
+
+start: AND {1}

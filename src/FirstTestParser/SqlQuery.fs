@@ -34,3 +34,5 @@ type SqlQuery =
         Joins: JoinClause list
         Where: WhereClause option
     }
+
+type NopType = int
