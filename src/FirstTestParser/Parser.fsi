@@ -24,6 +24,7 @@ type token =
   | WHERE
   | ORDER
   | BY
+  | ID of (string)
   | BOOL of (bool)
   | STRING of (string)
   | INT of (int)
@@ -51,6 +52,7 @@ type tokenId =
     | TOKEN_WHERE
     | TOKEN_ORDER
     | TOKEN_BY
+    | TOKEN_ID
     | TOKEN_BOOL
     | TOKEN_STRING
     | TOKEN_INT
@@ -70,4 +72,4 @@ val prodIdxToNonTerminal: int -> nonTerminalId
 
 /// This function gets the name of a token as a string
 val token_to_string: token -> string
-val start : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> (Int32) 
+val start : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> (int) 

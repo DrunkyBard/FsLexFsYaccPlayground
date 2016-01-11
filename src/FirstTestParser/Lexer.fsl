@@ -3,15 +3,14 @@
 module SqlLexer
 open SqlParser
 open System
-open SqlQuery
 open Microsoft.FSharp.Text.Lexing
 
 let lexeme = LexBuffer.LexemeString
 
 let keywords =   
     [   
-        "SELECT", SELECT;   
-        "FROM", FROM;   
+        "SELECT", SELECT;
+        "FROM", FROM;
         "WHERE", WHERE;   
         "ORDER", ORDER;   
         "BY", BY;   
@@ -54,16 +53,15 @@ let int = ['-' '+']? digit+
 
 rule lex = parse
   | whitespace  { lex lexbuf }
-  | newLine  { lexbuf.StartPos <- lexbuf.StartPos.NextLine }
-  | int  { INT(int.Parse(lexeme lexbuf)) }
+  | newLine  { lexbuf.StartPos <- lexbuf.StartPos.NextLine; lex lexbuf }
+  | int  { INT (int (lexeme lexbuf)) }
   | identifier  { readIdentifier lexbuf }
   | ops  { ops.[lexeme lexbuf] }
   | comma  { COMMA }
   | dot  { DOT }
   | eof  { EOF }
-
 and readIdentifier = parse
-    | identifier        {match Map.tryFind (identifier.ToUpper()) keywords with
+    | identifier        {match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
                                 | Some(kw) -> kw
-                                | None     -> ID(identifier) }
+                                | None     -> ID(lexeme lexbuf) }
     | eof               { EOF }

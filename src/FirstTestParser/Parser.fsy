@@ -9,6 +9,7 @@ open Microsoft.FSharp.Text.Lexing
 %token <int> INT
 %token <string> STRING
 %token <bool> BOOL
+%token <string> ID
 %token SELECT FROM WHERE ORDER BY 
 %token JOIN INNER LEFT RIGHT 
 %token ASC DESC AND OR ON
@@ -16,7 +17,7 @@ open Microsoft.FSharp.Text.Lexing
 %token DOT COMMA
 %token EOF
 
-%type <Int32> start
+%type <int> start
 
 %%
 

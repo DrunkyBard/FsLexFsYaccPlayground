@@ -35,6 +35,7 @@ type token =
   | WHERE
   | ORDER
   | BY
+  | ID of (string)
   | BOOL of (bool)
   | STRING of (string)
   | INT of (int)
@@ -63,6 +64,7 @@ type tokenId =
     | TOKEN_WHERE
     | TOKEN_ORDER
     | TOKEN_BY
+    | TOKEN_ID
     | TOKEN_BOOL
     | TOKEN_STRING
     | TOKEN_INT
@@ -99,9 +101,10 @@ let tagOfToken (t:token) =
   | WHERE  -> 20 
   | ORDER  -> 21 
   | BY  -> 22 
-  | BOOL _ -> 23 
-  | STRING _ -> 24 
-  | INT _ -> 25 
+  | ID _ -> 23 
+  | BOOL _ -> 24 
+  | STRING _ -> 25 
+  | INT _ -> 26 
 
 // This function maps integer indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
@@ -129,11 +132,12 @@ let tokenTagToTokenId (tokenIdx:int) =
   | 20 -> TOKEN_WHERE 
   | 21 -> TOKEN_ORDER 
   | 22 -> TOKEN_BY 
-  | 23 -> TOKEN_BOOL 
-  | 24 -> TOKEN_STRING 
-  | 25 -> TOKEN_INT 
-  | 28 -> TOKEN_end_of_input
-  | 26 -> TOKEN_error
+  | 23 -> TOKEN_ID 
+  | 24 -> TOKEN_BOOL 
+  | 25 -> TOKEN_STRING 
+  | 26 -> TOKEN_INT 
+  | 29 -> TOKEN_end_of_input
+  | 27 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
@@ -143,8 +147,8 @@ let prodIdxToNonTerminal (prodIdx:int) =
     | 1 -> NONTERM_start 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
-let _fsyacc_endOfInputTag = 28 
-let _fsyacc_tagOfErrorTerminal = 26
+let _fsyacc_endOfInputTag = 29 
+let _fsyacc_tagOfErrorTerminal = 27
 
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
@@ -172,6 +176,7 @@ let token_to_string (t:token) =
   | WHERE  -> "WHERE" 
   | ORDER  -> "ORDER" 
   | BY  -> "BY" 
+  | ID _ -> "ID" 
   | BOOL _ -> "BOOL" 
   | STRING _ -> "STRING" 
   | INT _ -> "INT" 
@@ -202,6 +207,7 @@ let _fsyacc_dataOfToken (t:token) =
   | WHERE  -> (null : System.Object) 
   | ORDER  -> (null : System.Object) 
   | BY  -> (null : System.Object) 
+  | ID _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | BOOL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | STRING _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | INT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
@@ -216,27 +222,27 @@ let _fsyacc_reductionSymbolCounts = [|1us; 1us; |]
 let _fsyacc_productionToNonTerminalTable = [|0us; 1us; |]
 let _fsyacc_immediateActions = [|65535us; 49152us; 16385us; |]
 let _fsyacc_reductions ()  =    [| 
-# 219 "Parser.fs"
+# 225 "Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Int32)) in
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 228 "Parser.fs"
+# 234 "Parser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 24 "Parser.fsy"
+# 25 "Parser.fsy"
                                  1
                    )
-# 24 "Parser.fsy"
-                 : Int32));
+# 25 "Parser.fsy"
+                 : int));
 |]
-# 239 "Parser.fs"
+# 245 "Parser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
@@ -255,8 +261,8 @@ let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> =
                               match parse_error_rich with 
                               | Some f -> f ctxt
                               | None -> parse_error ctxt.Message);
-    numTerminals = 29;
+    numTerminals = 30;
     productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }
 let engine lexer lexbuf startState = (tables ()).Interpret(lexer, lexbuf, startState)
-let start lexer lexbuf : Int32 =
+let start lexer lexbuf : int =
     Microsoft.FSharp.Core.Operators.unbox ((tables ()).Interpret(lexer, lexbuf, 0))

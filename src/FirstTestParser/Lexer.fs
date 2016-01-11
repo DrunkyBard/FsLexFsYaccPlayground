@@ -4,15 +4,14 @@
 module SqlLexer
 open SqlParser
 open System
-open SqlQuery
 open Microsoft.FSharp.Text.Lexing
 
 let lexeme = LexBuffer.LexemeString
 
 let keywords =   
     [   
-        "SELECT", SELECT;   
-        "FROM", FROM;   
+        "SELECT", SELECT;
+        "FROM", FROM;
         "WHERE", WHERE;   
         "ORDER", ORDER;   
         "BY", BY;   
@@ -39,7 +38,7 @@ let ops =
         "<>",   NEQ;
     ] |> Map.ofList  
 
-# 42 "Lexer.fs"
+# 41 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -184,60 +183,60 @@ and readIdentifier  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fsle
 and _fslex_lex  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 56 "Lexer.fsl"
+# 55 "Lexer.fsl"
                                  lex lexbuf 
-# 189 "Lexer.fs"
+# 188 "Lexer.fs"
           )
   | 1 -> ( 
-# 57 "Lexer.fsl"
-                              lexbuf.StartPos <- lexbuf.StartPos.NextLine 
-# 194 "Lexer.fs"
+# 56 "Lexer.fsl"
+                              lexbuf.StartPos <- lexbuf.StartPos.NextLine; lex lexbuf 
+# 193 "Lexer.fs"
           )
   | 2 -> ( 
-# 58 "Lexer.fsl"
-                          INT(int.Parse(lexeme lexbuf)) 
-# 199 "Lexer.fs"
+# 57 "Lexer.fsl"
+                          INT (int (lexeme lexbuf)) 
+# 198 "Lexer.fs"
           )
   | 3 -> ( 
-# 59 "Lexer.fsl"
+# 58 "Lexer.fsl"
                                  readIdentifier lexbuf 
-# 204 "Lexer.fs"
+# 203 "Lexer.fs"
           )
   | 4 -> ( 
-# 60 "Lexer.fsl"
+# 59 "Lexer.fsl"
                           ops.[lexeme lexbuf] 
-# 209 "Lexer.fs"
+# 208 "Lexer.fs"
           )
   | 5 -> ( 
-# 61 "Lexer.fsl"
+# 60 "Lexer.fsl"
                             COMMA 
-# 214 "Lexer.fs"
+# 213 "Lexer.fs"
           )
   | 6 -> ( 
-# 62 "Lexer.fsl"
+# 61 "Lexer.fsl"
                           DOT 
-# 219 "Lexer.fs"
+# 218 "Lexer.fs"
           )
   | 7 -> ( 
-# 63 "Lexer.fsl"
+# 62 "Lexer.fsl"
                           EOF 
-# 224 "Lexer.fs"
+# 223 "Lexer.fs"
           )
   | _ -> failwith "lex"
 (* Rule readIdentifier *)
 and _fslex_readIdentifier  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 66 "Lexer.fsl"
-                                        match Map.tryFind (identifier.ToUpper()) keywords with
+# 64 "Lexer.fsl"
+                                        match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
                                                | Some(kw) -> kw
-                                               | None     -> ID(identifier) 
-# 235 "Lexer.fs"
+                                               | None     -> ID(lexeme lexbuf) 
+# 234 "Lexer.fs"
           )
   | 1 -> ( 
-# 69 "Lexer.fsl"
+# 67 "Lexer.fsl"
                                          EOF 
-# 240 "Lexer.fs"
+# 239 "Lexer.fs"
           )
   | _ -> failwith "readIdentifier"
 
