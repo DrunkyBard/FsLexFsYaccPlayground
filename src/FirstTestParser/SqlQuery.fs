@@ -6,6 +6,12 @@ type Column =
         ColumnName : string 
     }
 
+type Table = 
+    {
+        Ref  : string
+        Name : string
+    }
+
 type Op = Eq | Neq | Lt | Gt | Leq | Geq 
 
 type Value = 
@@ -25,7 +31,11 @@ type WhereClause =
 
 type JoinType = INNER | LEFT | RIGHT
 
-type JoinClause = string * JoinType * WhereClause
+type JoinClause = Table * JoinType * WhereClause option
+
+type OrderDirection = ASC | DESC
+
+type OrderClause = OrderDirection*Column
 
 type SqlQuery = 
     { 
@@ -33,6 +43,7 @@ type SqlQuery =
         Columns: Column list
         Joins: JoinClause list
         Where: WhereClause option
+        Order: OrderClause option
     }
 
 type NopType = int

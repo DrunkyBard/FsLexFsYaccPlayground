@@ -21,6 +21,7 @@ type token =
   | RIGHT
   | SELECT
   | FROM
+  | AS
   | WHERE
   | ORDER
   | BY
@@ -49,6 +50,7 @@ type tokenId =
     | TOKEN_RIGHT
     | TOKEN_SELECT
     | TOKEN_FROM
+    | TOKEN_AS
     | TOKEN_WHERE
     | TOKEN_ORDER
     | TOKEN_BY
@@ -61,6 +63,21 @@ type tokenId =
 type nonTerminalId = 
     | NONTERM__startstart
     | NONTERM_start
+    | NONTERM_fromRule
+    | NONTERM_columns
+    | NONTERM_column
+    | NONTERM_joinRuleList
+    | NONTERM_joinRule
+    | NONTERM_joinTable
+    | NONTERM_joinType
+    | NONTERM_joinWhereExpr
+    | NONTERM_whereRule
+    | NONTERM_whereExpr
+    | NONTERM_whereOp
+    | NONTERM_orderRule
+    | NONTERM_orderDirectionRule
+    | NONTERM_value
+    | NONTERM_op
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 
@@ -72,4 +89,4 @@ val prodIdxToNonTerminal: int -> nonTerminalId
 
 /// This function gets the name of a token as a string
 val token_to_string: token -> string
-val start : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> (int) 
+val start : (Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> token) -> Microsoft.FSharp.Text.Lexing.LexBuffer<'cty> -> (SqlQuery.SqlQuery) 

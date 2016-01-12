@@ -1,11 +1,10 @@
 ﻿{
-//some F# code: open libraries, helper functions, etc
 module SqlLexer
 open SqlParser
 open System
 open Microsoft.FSharp.Text.Lexing
 
-let lexeme = LexBuffer.LexemeString
+let lexeme = LexBuffer<_>.LexemeString
 
 let keywords =   
     [   
@@ -23,6 +22,7 @@ let keywords =
         "AND", AND;   
         "OR", OR;   
         "ON", ON;
+        "AS", AS;
         "TRUE", BOOL(true);
         "FALSE", BOOL(false);
     ] |> Map.ofList   
@@ -38,32 +38,29 @@ let ops =
     ] |> Map.ofList  
 }
 
-//RegEx patterns
 let whitespace = ' ' | '\t'
 let newLine = "\r\n" | "\r" | "\n"
-let char = "[a-z A-Z]"
-let digit = "[0-9]"   
-let identifier  = char(char|digit|['-' '_' '.'])*
-let comma = ","
+let char = ['a'-'z' 'A'-'Z'] 
+let digit = ['0'-'9']      
+let identifier  = char(char|digit|['-' '_'])*
+let comma = "\,"
 let dot = "."
 let ops = "<" | "<=" | ">" | ">=" | "=" | "<>"
 let int = ['-' '+']? digit+
 
-//rule listOfRules
-
-rule lex = parse
+rule lex = 
+  parse
   | whitespace  { lex lexbuf }
-  | newLine  { lexbuf.StartPos <- lexbuf.StartPos.NextLine; lex lexbuf }
-  | int  { INT (int (lexeme lexbuf)) }
-  | identifier  { readIdentifier lexbuf }
-  | ops  { ops.[lexeme lexbuf] }
-  | comma  { COMMA }
-  | dot  { DOT }
-  | eof  { EOF }
-and readIdentifier = parse
-    | identifier        {
-                            match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
-                                | Some(kw) -> kw
-                                | None     -> ID(lexeme lexbuf) 
-                        }
-    | eof               { EOF }
+  | newLine     { lexbuf.StartPos <- lexbuf.StartPos.NextLine; lex lexbuf }
+  | int         { INT (int (lexeme lexbuf)) }
+  | identifier  { 
+                    match Map.tryFind ((lexeme lexbuf).ToUpper()) keywords with
+                             | Some(kw) -> kw
+                             | None     -> ID(lexeme lexbuf) 
+                }
+  | ops         { ops.[lexeme lexbuf] }
+  | comma       { COMMA }
+  | dot         { DOT }
+  | eof         { EOF }
+  | _           {  failwith ("ParseError: " + lexeme lexbuf) }
+
