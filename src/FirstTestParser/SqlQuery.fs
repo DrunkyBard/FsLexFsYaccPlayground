@@ -8,7 +8,7 @@ type Column =
 
 type Table = 
     {
-        Ref  : string
+        Alias  : string option
         Name : string
     }
 
@@ -39,11 +39,11 @@ type OrderClause = OrderDirection*Column
 
 type SqlQuery = 
     { 
-        Table: string
+        Table: Table
         Columns: Column list
         Joins: JoinClause list
         Where: WhereClause option
-        Order: OrderClause option
+        Order: OrderClause list
     }
 
 type NopType = int

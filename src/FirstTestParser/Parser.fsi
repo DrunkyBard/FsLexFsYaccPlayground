@@ -64,6 +64,7 @@ type nonTerminalId =
     | NONTERM__startstart
     | NONTERM_start
     | NONTERM_fromRule
+    | NONTERM_tableDef
     | NONTERM_columns
     | NONTERM_column
     | NONTERM_joinRuleList
@@ -75,6 +76,7 @@ type nonTerminalId =
     | NONTERM_whereExpr
     | NONTERM_whereOp
     | NONTERM_orderRule
+    | NONTERM_orderColumnList
     | NONTERM_orderDirectionRule
     | NONTERM_value
     | NONTERM_op
