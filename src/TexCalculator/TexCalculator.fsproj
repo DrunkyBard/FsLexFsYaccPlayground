@@ -57,9 +57,16 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <FsYacc Include="TexParser.fsy" >
+      <OtherFlags>--module TexParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="TexLexer.fsl" >
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
+    <Compile Include="TexAst.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsLexYacc.Runtime">
@@ -81,6 +88,13 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!--<PropertyGroup>
+    <PreBuildEvent>fsyacc "$(ProjectDir)TexParser.fsp"</PreBuildEvent>
+  </PropertyGroup>-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
