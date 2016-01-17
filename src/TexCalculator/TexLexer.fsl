@@ -22,6 +22,7 @@ let rSqBrace = "]"
 let excl = "!"
 let caret = "^"
 let eq = "="
+let comma = ","
 let underscore = "_"
 let frac = "frac"
 let sqrt = "sqrt"
@@ -55,6 +56,7 @@ rule lex = parse
 	| rSqBrace      { RSQBRACE }
 	| excl          { EXCL }
 	| eq            { EQ }
+	| comma         { COMMA }
 	| underscore    { UNDERSCORE }
 	| frac          { FRAC }
 	| sqrt          { SQRT }
