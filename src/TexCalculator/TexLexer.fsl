@@ -1,1 +1,69 @@
-﻿
+﻿{
+module TexLexer
+
+open TexParser
+open System
+open Microsoft.FSharp.Text.Lexing
+
+let lexeme = LexBuffer<_>.LexemeString
+}
+
+let plus = "+"
+let sub = "-"
+let mul = "*"
+let div = "/"
+let slash = "\\"
+let lCurly = "{"
+let rCurly = "}"
+let lParen = "("
+let rParen = ")"
+let lSqBrace = "["
+let rSqBrace = "]"
+let excl = "!"
+let caret = "^"
+let eq = "="
+let underscore = "_"
+let frac = "frac"
+let sqrt = "sqrt"
+let bmod = "bmod"
+let sum = "sum"
+let prod = "prod"
+let integral = "int"
+let times = "times"
+let infinite = "infty"
+let to = "to"
+let limit = "lim"
+
+let digit = ['0' - '9']
+let int = digit+
+let whitespace = ' ' | '\t'
+
+rule lex = parse
+    | whitespace    { lex lexbuf}
+	| int           { INT (int (lexeme lexbuf)) }
+	| plus          { PLUS }
+	| sub           { SUB }
+	| mul           { MUL }
+	| div           { DIV }
+	| caret         { CARET }
+	| slash         { SLASH }
+	| lParen        { LPAREN }
+	| rParen        { RPAREN }
+	| lCurly        { LCURLY }
+	| rCurly        { RCURLY }
+	| lSqBrace      { LSQBRACE }
+	| rSqBrace      { RSQBRACE }
+	| excl          { EXCL }
+	| eq            { EQ }
+	| underscore    { UNDERSCORE }
+	| frac          { FRAC }
+	| sqrt          { SQRT }
+	| bmod          { BMOD }
+	| sum           { SUM }
+	| prod          { PROD }
+	| integral      { INTEGRAL }
+	| times         { TIMES }
+	| infinite      { INFTY }
+	| to            { TO }
+	| limit         { LIM }
+	| eof			{ EOF }

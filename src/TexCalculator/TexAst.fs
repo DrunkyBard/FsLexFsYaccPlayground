@@ -1,49 +1,60 @@
-﻿module SqlQuery
+﻿module TexAst
 
-type Column = 
-    { 
-        TableRef : string
-        ColumnName : string 
-    }
+open System.Collections.Generic
 
-type Table = 
-    {
-        Alias  : string option
-        Name : string
-    }
-
-type Op = Eq | Neq | Lt | Gt | Leq | Geq 
-
-type Value = 
-    | Int of int
-    | Bool of bool
-    | String of string
+type Token = 
+    | INT of int
+    | SUM
+    | SUB
+    | MUL
+    | DIV
+    | LPAREN
+    | RPAREN
+    | EOF
 
 type Expr = 
-    | RefOnly of Op * Column * Column
-    | RefValue of Op * Column * Value
-    | Value of Op * Value * Value
+    | Sum of Expr * Expr
+    | Sub of Expr * Expr
+    | Mul of Expr * Expr
+    | Div of Expr * Expr
+    | Int of int
 
-type WhereClause = 
-    | Expr of Expr
-    | And of WhereClause * WhereClause
-    | Or of WhereClause * WhereClause
+type Ast(parent: Ast option, node: Expr) = 
+    member this.Node = node
+    member this.Parent = parent
 
-type JoinType = INNER | LEFT | RIGHT
+let processLowPriorOperation token (operands : Stack<Expr>) (operations : Stack<Token>) = 
+    let rec processInternal token (operands : Stack<Expr>) (operations : Stack<Token>) = 
+        match operations.Count with
+        | 0 -> operations.Push(token)
+        | _ -> 
+            match operations.Peek() with
+            | MUL -> 
+                let sOp, fOp = operands.Pop(), operands.Pop()
+                operands.Push(Mul(fOp, sOp))
+                operations.Pop() |> ignore
+                processInternal token operands operations
+            | DIV -> 
+                let sOp, fOp = operands.Pop(), operands.Pop()
+                operands.Push(Mul(fOp, sOp))
+                operations.Pop() |> ignore
+                processInternal token operands operations
+            | any -> operations.Push(any)
+    processInternal token operands operations
 
-type JoinClause = Table * JoinType * WhereClause option
+let processHighPriorOperation token (operations : Stack<Token>) = operations.Push(token)
 
-type OrderDirection = ASC | DESC
-
-type OrderClause = OrderDirection*Column
-
-type SqlQuery = 
-    { 
-        Table: Table
-        Columns: Column list
-        Joins: JoinClause list
-        Where: WhereClause option
-        Order: OrderClause list
-    }
-
-type NopType = int
+let rec eofTokenReached (operands : Stack<Expr>) (operations : Stack<Token>) : Expr = 
+    match operands.Count, operations.Count with
+    | (1, 0) -> operands.Pop()
+    | (_, 0) -> failwith "Error"
+    | (_, _) -> 
+        let sOp, fOp = operands.Pop(), operands.Pop()
+        let resOp = 
+            match operations.Pop() with
+            | SUM -> Sum(fOp, sOp)
+            | SUB -> Sub(fOp, sOp)
+            | MUL -> Mul(fOp, sOp)
+            | DIV -> Div(fOp, sOp)
+        operands.Push(resOp)
+        eofTokenReached operands operations

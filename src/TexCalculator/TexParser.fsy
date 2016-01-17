@@ -1,1 +1,19 @@
-﻿
+﻿%{
+open TexAst
+open Microsoft.FSharp.Text.Lexing
+%}
+
+%start start
+
+%token <int> INT
+%token LSQBRACE RSQBRACE LPAREN RPAREN LCURLY RCURLY EXCL CARET EQ UNDERSCORE SLASH
+%token PLUS SUB MUL DIV 
+%token FRAC SQRT SUM PROD INTEGRAL TIMES INFTY TO LIM BMOD
+%token EOF
+
+%type <TexAst.Expr> start
+
+%%
+
+start:
+    EOF { Int(1) }
