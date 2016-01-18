@@ -18,6 +18,8 @@ type Expr =
     | Mul of Expr * Expr
     | Div of Expr * Expr
     | Sum of Expr list
+    | Prod of Expr list
+    | Fact of Expr
     | Int of int
 
 type Ast(parent: Ast option, node: Expr) = 
