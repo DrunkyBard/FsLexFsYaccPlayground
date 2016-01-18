@@ -27,6 +27,7 @@ type token =
   | EQ
   | UNDERSCORE
   | SLASH
+  | COMMA
   | INT of (int)
 type tokenId = 
     | TOKEN_EOF
@@ -55,12 +56,17 @@ type tokenId =
     | TOKEN_EQ
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
+    | TOKEN_COMMA
     | TOKEN_INT
     | TOKEN_end_of_input
     | TOKEN_error
 type nonTerminalId = 
     | NONTERM__startstart
     | NONTERM_start
+    | NONTERM_formula
+    | NONTERM_plus
+    | NONTERM_sum
+    | NONTERM_argumentSet
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

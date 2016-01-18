@@ -13,10 +13,11 @@ type Token =
     | EOF
 
 type Expr = 
-    | Sum of Expr * Expr
+    | Plus of Expr * Expr
     | Sub of Expr * Expr
     | Mul of Expr * Expr
     | Div of Expr * Expr
+    | Sum of Expr list
     | Int of int
 
 type Ast(parent: Ast option, node: Expr) = 
@@ -52,7 +53,7 @@ let rec eofTokenReached (operands : Stack<Expr>) (operations : Stack<Token>) : E
         let sOp, fOp = operands.Pop(), operands.Pop()
         let resOp = 
             match operations.Pop() with
-            | SUM -> Sum(fOp, sOp)
+            | SUM -> Plus(fOp, sOp)
             | SUB -> Sub(fOp, sOp)
             | MUL -> Mul(fOp, sOp)
             | DIV -> Div(fOp, sOp)

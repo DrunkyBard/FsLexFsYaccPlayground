@@ -16,4 +16,21 @@ open Microsoft.FSharp.Text.Lexing
 %%
 
 start:
-    EOF { Int(1) }
+	formula EOF { $1 }
+
+formula:
+    | sum  { $1 }
+	| plus { $1 }
+	| INT  { Int($1) }
+    
+
+plus:
+    | formula PLUS formula  { Plus($1, $3) }
+
+sum:
+    | SLASH SUM LCURLY argumentSet RCURLY  { Sum(List.rev $4) }
+
+
+argumentSet:
+    | formula  { [$1] }
+	| argumentSet COMMA formula { $3::$1 }
