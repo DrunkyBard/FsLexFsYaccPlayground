@@ -42,6 +42,7 @@ mediumPriorityBinaryOperator:
 
 highPriorityFunction:
     | INT   { Int($1) }
+    | LPAREN expression RPAREN   { $2 }
 	| sum   { $1 }
 	| prod  { $1 }
 	| fact  { $1 }
