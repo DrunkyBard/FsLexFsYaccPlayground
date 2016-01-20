@@ -319,7 +319,7 @@ and _fslex_lex  _fslex_state lexbuf =
           )
   | 31 -> ( 
 # 76 "TexLexer.fsl"
-                                  VAR(lexeme lexbuf) 
+                                  ID(lexeme lexbuf) 
 # 323 "TexLexer.fs"
           )
   | 32 -> ( 

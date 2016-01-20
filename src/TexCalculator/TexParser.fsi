@@ -30,7 +30,9 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
-  | VAR of (string)
+  | MREFVAL of (string)
+  | SREFVAL of (string)
+  | ID of (string)
   | DIFF of (string)
   | INT of (int)
 type tokenId = 
@@ -63,7 +65,9 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
-    | TOKEN_VAR
+    | TOKEN_MREFVAL
+    | TOKEN_SREFVAL
+    | TOKEN_ID
     | TOKEN_DIFF
     | TOKEN_INT
     | TOKEN_end_of_input
@@ -76,7 +80,10 @@ type nonTerminalId =
     | NONTERM_sum
     | NONTERM_prod
     | NONTERM_fact
+    | NONTERM_frac
+    | NONTERM_power
     | NONTERM_integral
+    | NONTERM_limit
     | NONTERM_lowPriorityBinaryOperator
     | NONTERM_mediumPriorityBinaryOperator
     | NONTERM_highPriorityFunction

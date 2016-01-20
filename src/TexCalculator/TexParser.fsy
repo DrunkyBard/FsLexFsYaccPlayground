@@ -5,7 +5,9 @@ open Microsoft.FSharp.Text.Lexing
 
 %token <int> INT
 %token <string> DIFF
-%token <string> VAR
+%token <string> ID
+%token <string> SREFVAL
+%token <string> MREFVAL
 %token LSQBRACE RSQBRACE LPAREN RPAREN LCURLY RCURLY EXCL CARET EQ UNDERSCORE SLASH COMMA
 %token PLUS SUB MUL DIV 
 %token FRAC SQRT SUM PROD INTEGRAL TIMES INFTY TO LIM BMOD
@@ -42,8 +44,14 @@ fact:
 frac:
     SLASH FRAC LCURLY expression RCURLY LCURLY expression RCURLY   { Div($4, $7) }
 
+power:
+    LCURLY expression RCURLY CARET LCURLY expression RCURLY  { Pow($2, $6) }
+
 integral:
     SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression RCURLY DIFF { Integral($12, $14, $5, $9) }
+
+limit:
+    SLASH LIM UNDERSCORE LCURLY ID TO expression RCURLY LCURLY expression RCURLY  { Lim($10, $5, $7) }
 
 lowPriorityBinaryOperator:
     | PLUS  { PLUS }
@@ -61,8 +69,10 @@ highPriorityFunction:
 	| fact     { $1 }
 	| integral { $1 }
 	| constant { $1 }
+    | power    { $1 }
     | frac     { $1 }
-	| VAR      { Var($1) }
+	| limit    { $1 }
+	| ID       { Var($1) }
 	| DIFF     { Diff($1) }
 
 mediumPriorityBinaryExpression:

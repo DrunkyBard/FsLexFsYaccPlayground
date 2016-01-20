@@ -60,7 +60,7 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <FsYacc Include="TexParser.fsy">
-      <OtherFlags>--module TexParser</OtherFlags>
+      <OtherFlags>-v --module TexParser</OtherFlags>
     </FsYacc>
     <FsLex Include="TexLexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
@@ -91,6 +91,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

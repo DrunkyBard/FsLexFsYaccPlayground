@@ -4,6 +4,7 @@ module TexLexer
 open TexParser
 open System
 open Microsoft.FSharp.Text.Lexing
+open System.Text
 
 let lexeme = LexBuffer<_>.LexemeString
 }
@@ -38,7 +39,7 @@ let limit = "lim"
 let digit = ['0' - '9']
 let char = ['a'-'z' 'A'-'Z'] 
 let int = digit+
-let identifier  = char(char)*
+let identifier  = char+
 let ignore = ' ' | '\t' | "\\," | "\\mathrm"
 
 rule lex = parse
@@ -73,7 +74,9 @@ rule lex = parse
 	| "d"           { diff lexbuf }
 	| "e"           { EULERNUM }
 	| "\\pi"        { PI }
-	| identifier    { VAR(lexeme lexbuf) }
+	| "[|"          { domainSpecificSValue (new StringBuilder()) lexbuf }
+	| "[||"         { domainSpecificMValue lexbuf }
+	| identifier    { ID(lexeme lexbuf) }
 	| eof			{ EOF }
 
 and diff = parse
@@ -81,3 +84,11 @@ and diff = parse
                             let matched = lexeme lexbuf
                             DIFF(matched.Substring(1, matched.Length-2))
                           }
+
+and domainSpecificSValue s = parse
+    | "|]"   { ID(s.ToString()) }
+    | _      { domainSpecificSValue (s.Append(lexeme lexbuf)) lexbuf  }
+
+and domainSpecificMValue s = parse
+    | "||]"  { ID(s.ToString()) }    
+    | _ ","  { ID(s.ToString()) } 
