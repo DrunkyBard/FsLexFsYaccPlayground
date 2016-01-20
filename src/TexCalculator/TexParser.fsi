@@ -30,6 +30,7 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
+  | MMREFVAL of (string list)
   | MREFVAL of (string)
   | SREFVAL of (string)
   | ID of (string)
@@ -65,6 +66,7 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
+    | TOKEN_MMREFVAL
     | TOKEN_MREFVAL
     | TOKEN_SREFVAL
     | TOKEN_ID
