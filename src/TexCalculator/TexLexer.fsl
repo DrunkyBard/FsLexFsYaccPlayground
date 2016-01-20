@@ -36,11 +36,13 @@ let to = "to"
 let limit = "lim"
 
 let digit = ['0' - '9']
+let char = ['a'-'z' 'A'-'Z'] 
 let int = digit+
-let whitespace = ' ' | '\t'
+let identifier  = char(char)*
+let ignore = ' ' | '\t' | "\\," | "\\mathrm"
 
 rule lex = parse
-    | whitespace    { lex lexbuf}
+    | ignore        { lex lexbuf }
 	| int           { INT (int (lexeme lexbuf)) }
 	| plus          { PLUS }
 	| sub           { SUB }
@@ -68,4 +70,14 @@ rule lex = parse
 	| infinite      { INFTY }
 	| to            { TO }
 	| limit         { LIM }
+	| "d"           { diff lexbuf }
+	| "e"           { EULERNUM }
+	| "\\pi"        { PI }
+	| identifier    { VAR(lexeme lexbuf) }
 	| eof			{ EOF }
+
+and diff = parse
+    | "{"identifier"}"    { 
+                            let matched = lexeme lexbuf
+                            DIFF(matched.Substring(1, matched.Length-2))
+                          }

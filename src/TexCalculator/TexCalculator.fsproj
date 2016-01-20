@@ -68,6 +68,7 @@
     <Compile Include="TexAst.fs" />
     <Compile Include="TexParser.fs" />
     <Compile Include="TexLexer.fs" />
+    <Compile Include="ParserExtensions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

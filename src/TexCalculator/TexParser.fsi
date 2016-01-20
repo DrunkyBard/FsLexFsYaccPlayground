@@ -2,6 +2,8 @@
 module TexParser
 type token = 
   | EOF
+  | PI
+  | EULERNUM
   | FRAC
   | SQRT
   | SUM
@@ -28,9 +30,13 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
+  | VAR of (string)
+  | DIFF of (string)
   | INT of (int)
 type tokenId = 
     | TOKEN_EOF
+    | TOKEN_PI
+    | TOKEN_EULERNUM
     | TOKEN_FRAC
     | TOKEN_SQRT
     | TOKEN_SUM
@@ -57,6 +63,8 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
+    | TOKEN_VAR
+    | TOKEN_DIFF
     | TOKEN_INT
     | TOKEN_end_of_input
     | TOKEN_error
@@ -64,14 +72,16 @@ type nonTerminalId =
     | NONTERM__startstart
     | NONTERM_start
     | NONTERM_expression
+    | NONTERM_constant
     | NONTERM_sum
     | NONTERM_prod
     | NONTERM_fact
+    | NONTERM_integral
     | NONTERM_lowPriorityBinaryOperator
     | NONTERM_mediumPriorityBinaryOperator
     | NONTERM_highPriorityFunction
-    | NONTERM_lowPriorityBinaryExpression
     | NONTERM_mediumPriorityBinaryExpression
+    | NONTERM_lowPriorityBinaryExpression
     | NONTERM_argumentSet
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
