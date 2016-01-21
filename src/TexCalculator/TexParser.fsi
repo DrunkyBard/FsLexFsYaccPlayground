@@ -86,6 +86,7 @@ type nonTerminalId =
     | NONTERM_power
     | NONTERM_integral
     | NONTERM_limit
+    | NONTERM_refValue
     | NONTERM_lowPriorityBinaryOperator
     | NONTERM_mediumPriorityBinaryOperator
     | NONTERM_highPriorityFunction

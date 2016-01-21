@@ -1,4 +1,8 @@
 ﻿module ParserExtensions
 
-module TexParser1 =
-    let parse (f: int -> int) lexbuf = TexParser.start lexbuf
+open TexAst
+
+module TexParser = 
+    let parse (domainSpecificAnalyzer : DomainSpecificToken -> DomainSpecificAst) lexbuf = 
+        TexParser.domainSpecificAnalyzer <- domainSpecificAnalyzer
+        (TexLexer.lex, lexbuf) ||> TexParser.start

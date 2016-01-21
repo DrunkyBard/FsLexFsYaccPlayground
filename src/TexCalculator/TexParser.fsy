@@ -1,6 +1,11 @@
 ﻿%{
 open TexAst
 open Microsoft.FSharp.Text.Lexing
+
+let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificToken -> DomainSpecificAst>
+
+let analyzeDomainSpecificLanguage token = DsAst(domainSpecificAnalyzer token)
+
 %}
 
 %token <int> INT
@@ -54,6 +59,11 @@ integral:
 limit:
     SLASH LIM UNDERSCORE LCURLY ID TO expression RCURLY LCURLY expression RCURLY  { Lim($10, $5, $7) }
 
+refValue:
+    | SREFVAL      { analyzeDomainSpecificLanguage (DomainSpecificToken.SRefValue($1))  }
+	| MREFVAL      { analyzeDomainSpecificLanguage (DomainSpecificToken.MRefValue($1))  }
+	| MMREFVAL     { analyzeDomainSpecificLanguage (DomainSpecificToken.MMRefValue($1)) }
+
 lowPriorityBinaryOperator:
     | PLUS  { PLUS }
     | SUB   { SUB }
@@ -63,18 +73,19 @@ mediumPriorityBinaryOperator:
     | DIV   { DIV }
 
 highPriorityFunction:
-    | INT   { Int($1) }
+    | INT                        { Int($1) }
     | LPAREN expression RPAREN   { $2 }
-	| sum      { $1 }
-	| prod     { $1 }
-	| fact     { $1 }
-	| integral { $1 }
-	| constant { $1 }
-    | power    { $1 }
-    | frac     { $1 }
-	| limit    { $1 }
-	| ID       { Var($1) }
-	| DIFF     { Diff($1) }
+	| sum                        { $1 }
+	| prod                       { $1 }
+	| fact                       { $1 }
+	| integral                   { $1 }
+	| constant                   { $1 }
+    | power                      { $1 }
+    | frac                       { $1 }
+	| limit                      { $1 }
+	| refValue                   { $1 }
+	| ID                         { Var($1) }
+	| DIFF                       { Diff($1) }
 
 mediumPriorityBinaryExpression:
     | highPriorityFunction mediumPriorityBinaryOperator highPriorityFunction  { 

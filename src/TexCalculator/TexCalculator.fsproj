@@ -69,6 +69,12 @@
     <Compile Include="TexParser.fs" />
     <Compile Include="TexLexer.fs" />
     <Compile Include="ParserExtensions.fs" />
+    <FsYacc Include="DomainSpecific\DsParser.fsy">
+      <OtherFlags>-v --module TexParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="DomainSpecific\DsLex.fsl">
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
