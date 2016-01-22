@@ -64,7 +64,7 @@ sum:
     | SLASH SUM CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY                              { Sum(None, Some($5), List.rev $8) }
 
 prod:
-    | SLASH PROD LCURLY argumentSet RCURLY                                                     { Prod(List.rev $4) }
+    | SLASH PROD LCURLY argumentSet RCURLY                                                     { Prod(None, None, List.rev $4) }
     | SLASH PROD UNDERSCORE LCURLY ID RCURLY CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY  { Prod(Some($5), Some($9), List.rev $12) }
     | SLASH PROD UNDERSCORE LCURLY ID RCURLY LCURLY argumentSet RCURLY                         { Prod(Some($5), None, List.rev $8) }
     | SLASH PROD CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY                              { Prod(None, Some($5), List.rev $8) }
