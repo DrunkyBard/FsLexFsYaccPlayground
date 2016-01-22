@@ -19,8 +19,8 @@ type Expr =
     | Sub of Expr * Expr
     | Mul of Expr * Expr
     | Div of Expr * Expr
-    | Sum of Expr list
-    | Prod of Expr list
+    | Sum of string option*string option*(Expr list)  // idxIdentifier x upperBoundIdentifier x args
+    | Prod of string option*string option*(Expr list) // idxIdentifier x upperBoundIdentifier x args
     | Fact of Expr
     | Pow of Expr*Expr
     | Int of int

@@ -39,7 +39,7 @@ let limit = "lim"
 let digit = ['0' - '9']
 let char = ['a'-'z' 'A'-'Z'] 
 let int = digit+
-let identifier  = char+
+let identifier  = char(char|digit)*
 let ignore = ' ' | '\t' | "\\," | "\\mathrm"
 
 rule lex = parse
