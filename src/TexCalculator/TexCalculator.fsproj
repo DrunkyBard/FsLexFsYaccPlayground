@@ -70,11 +70,15 @@
     <Compile Include="TexLexer.fs" />
     <Compile Include="ParserExtensions.fs" />
     <FsYacc Include="DomainSpecific\DsParser.fsy">
-      <OtherFlags>-v --module TexParser</OtherFlags>
+      <OtherFlags>-o DomainSpecific\DsParser.fs -v --module DsParser</OtherFlags>
     </FsYacc>
     <FsLex Include="DomainSpecific\DsLex.fsl">
-      <OtherFlags>--unicode</OtherFlags>
+      <OtherFlags>-o DomainSpecific\DsLex.fs --unicode</OtherFlags>
     </FsLex>
+    <Compile Include="DomainSpecific\QueryStatement.fs" />
+    <Compile Include="DomainSpecific\DsParser.fs" />
+    <Compile Include="DomainSpecific\DsLex.fs" />
+    <Compile Include="DomainSpecific\DsParserExtensions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

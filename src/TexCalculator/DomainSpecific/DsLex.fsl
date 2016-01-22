@@ -1,1 +1,59 @@
-﻿
+﻿{
+module DsLex
+
+open System.Text
+open Microsoft.FSharp.Text.Lexing
+open DsParser
+
+let lexeme = LexBuffer<_>.LexemeString
+let singleStatements = ["with"]
+
+let checkStatement single strLexem token (lexbuf: LexBuffer<_>) = 
+    match single, List.tryFind(fun s -> s = strLexem) singleStatements with
+      | (true, Some(_)) | (false, None) -> token
+      | (true, None) -> failwithf "Unexpected keyword %A for single query statement at pos: %u" strLexem lexbuf.StartPos.Column
+      | (false, Some(_)) -> failwithf "Unexpected keyword %A for many query statement at pos: %u" strLexem lexbuf.StartPos.Column
+}
+
+let select = "select"
+let for = "for"
+let with = "with"
+let where = "where"
+let andKeyword = "and"
+let or = "or"
+let le = "<="
+let lt = "<1"
+let ge = ">="
+let gt = ">" 
+let eq = "="
+let nEq = "<>"
+
+let char = ['a'-'z' 'A'-'Z']
+let digit = ['0' - '9']
+let int = digit+
+let identifier = char(char|digit|['-' '_'])*
+let string = char+
+let skip = ' ' | '\t'
+
+rule lex single = parse
+  | skip    { lex single lexbuf }
+  | select  { SELECT }
+  | for     { FOR }
+  | with    { checkStatement single (lexeme lexbuf) WITH lexbuf }
+  | where   { checkStatement single (lexeme lexbuf) WHERE lexbuf }
+  | andKeyword     { AND }
+  | or      { OR }
+  | le      { LE }
+  | lt      { LT }
+  | ge      { GE }
+  | gt      { GT }
+  | eq      { EQ }
+  | nEq     { NEQ }
+  | int     { INT(int (lexeme lexbuf)) }
+  | identifier { ID(lexeme lexbuf) }
+  | "\""    { lexString (new StringBuilder()) lexbuf }
+  | eof     { EOF }
+
+and lexString s = parse
+  | "\""   { STRING(s.ToString()) }
+  | _      { lexString (s.Append(lexeme lexbuf)) lexbuf }

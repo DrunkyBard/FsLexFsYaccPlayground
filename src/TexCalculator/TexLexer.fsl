@@ -75,8 +75,8 @@ rule lex = parse
 	| "e"           { EULERNUM }
 	| "\\pi"        { PI }
 	| "[||]"        { failwithf "Empty ref value at pos: %A" (lexbuf.EndPos.Column-2) }
-	| "[|"          { domainSpecificSValue (new StringBuilder()) lexbuf }
-	| "[||"         { domainSpecificMValue (new StringBuilder()) [] false 0 lexbuf }
+	| "[|"          { domainSpecificSValue (new StringBuilder()) (lexbuf.EndPos.Column) lexbuf }
+	| "[||"         { domainSpecificMValue (new StringBuilder()) [] false (lexbuf.EndPos.Column) lexbuf }
 	| identifier    { ID(lexeme lexbuf) }
 	| eof			{ EOF }
 
@@ -86,24 +86,23 @@ and diff = parse
                             DIFF(matched.Substring(1, matched.Length-2))
                           }
 
-and domainSpecificSValue s = parse
+and domainSpecificSValue s dsPos = parse
     | "|]"   { 
                  let s' = s.ToString()
 
                  if String.IsNullOrWhiteSpace(s') then failwithf "Empty ref value at pos: %A" lexbuf.StartPos.Column
-                 else SREFVAL(s')
+                 else SREFVAL(s', dsPos)
              }
-    | _      { domainSpecificSValue (s.Append(lexeme lexbuf)) lexbuf  }
+    | _      { domainSpecificSValue (s.Append(lexeme lexbuf)) dsPos lexbuf  }
 
-and domainSpecificMValue s vals commaSeparated commaCol = parse
+and domainSpecificMValue s vals commaSeparated dsPos = parse
     | "||]"  { 
                  let lastVal = s.ToString()
 
                  match List.length vals, commaSeparated, String.IsNullOrWhiteSpace(lastVal) with
-                     | (x, true, _) | (x, false, true) when x>0 -> failwithf "Unexpected comma symbol at pos: %A" commaCol
+                     | (x, true, _) | (x, false, true) when x>0 -> failwithf "Unexpected comma symbol at pos: %A" (dsPos-1)
                      | (_, _, true) -> failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
-                     | (0, false, _) -> MREFVAL(lastVal)
-                     | (_, false, _) -> MMREFVAL(List.rev (lastVal::vals))
+                     | (_, false, _) -> (lastVal, dsPos)::vals |> List.rev |> MREFVAL
              }    
     | _ ","  { 
                  let matched = lexeme lexbuf
@@ -111,6 +110,6 @@ and domainSpecificMValue s vals commaSeparated commaCol = parse
 
                  if String.IsNullOrWhiteSpace(matched) then failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
                  else
-                   domainSpecificMValue (new StringBuilder()) ((s.Append(matched).ToString())::vals) true lexbuf.EndPos.Column lexbuf
+                   domainSpecificMValue (new StringBuilder()) ((s.Append(matched).ToString(), dsPos)::vals) true lexbuf.EndPos.Column lexbuf
              }
-    | _      { domainSpecificMValue (s.Append(lexeme lexbuf)) vals false commaCol lexbuf }
+    | _      { domainSpecificMValue (s.Append(lexeme lexbuf)) vals false dsPos lexbuf }

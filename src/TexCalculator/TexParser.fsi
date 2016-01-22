@@ -30,9 +30,12 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
-  | MMREFVAL of (string list)
-  | MREFVAL of (string)
-  | SREFVAL of (string)
+  | LSREFBRACKET
+  | RSREFBRACKET
+  | LMREFBRACKET
+  | RMREFBRACKET
+  | MREFVAL of ((string*int) list)
+  | SREFVAL of (string*int)
   | ID of (string)
   | DIFF of (string)
   | INT of (int)
@@ -66,7 +69,10 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
-    | TOKEN_MMREFVAL
+    | TOKEN_LSREFBRACKET
+    | TOKEN_RSREFBRACKET
+    | TOKEN_LMREFBRACKET
+    | TOKEN_RMREFBRACKET
     | TOKEN_MREFVAL
     | TOKEN_SREFVAL
     | TOKEN_ID

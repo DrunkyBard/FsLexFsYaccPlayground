@@ -187,9 +187,9 @@ and lex  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_lex  15 l
 (* Rule diff *)
 and diff  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_diff  10 lexbuf
 (* Rule domainSpecificSValue *)
-and domainSpecificSValue s (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_domainSpecificSValue s 6 lexbuf
+and domainSpecificSValue s dsPos (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_domainSpecificSValue s dsPos 6 lexbuf
 (* Rule domainSpecificMValue *)
-and domainSpecificMValue s vals commaSeparated commaCol (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_domainSpecificMValue s vals commaSeparated commaCol 0 lexbuf
+and domainSpecificMValue s vals commaSeparated dsPos (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_domainSpecificMValue s vals commaSeparated dsPos 0 lexbuf
 (* Rule lex *)
 and _fslex_lex  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
@@ -355,12 +355,12 @@ and _fslex_lex  _fslex_state lexbuf =
           )
   | 32 -> ( 
 # 78 "TexLexer.fsl"
-                                  domainSpecificSValue (new StringBuilder()) lexbuf 
+                                  domainSpecificSValue (new StringBuilder()) (lexbuf.EndPos.Column) lexbuf 
 # 359 "TexLexer.fs"
           )
   | 33 -> ( 
 # 79 "TexLexer.fsl"
-                                  domainSpecificMValue (new StringBuilder()) [] false 0 lexbuf 
+                                  domainSpecificMValue (new StringBuilder()) [] false (lexbuf.EndPos.Column) lexbuf 
 # 364 "TexLexer.fs"
           )
   | 34 -> ( 
@@ -387,53 +387,52 @@ and _fslex_diff  _fslex_state lexbuf =
           )
   | _ -> failwith "diff"
 (* Rule domainSpecificSValue *)
-and _fslex_domainSpecificSValue s _fslex_state lexbuf =
+and _fslex_domainSpecificSValue s dsPos _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
 # 90 "TexLexer.fsl"
                               
                                 let s' = s.ToString()
                                 if String.IsNullOrWhiteSpace(s') then failwithf "Empty ref value at pos: %A" lexbuf.StartPos.Column
-                                else SREFVAL(s')
+                                else SREFVAL(s', dsPos)
                             
 # 399 "TexLexer.fs"
           )
   | 1 -> ( 
 # 96 "TexLexer.fsl"
-                              domainSpecificSValue (s.Append(lexeme lexbuf)) lexbuf  
+                              domainSpecificSValue (s.Append(lexeme lexbuf)) dsPos lexbuf  
 # 404 "TexLexer.fs"
           )
   | _ -> failwith "domainSpecificSValue"
 (* Rule domainSpecificMValue *)
-and _fslex_domainSpecificMValue s vals commaSeparated commaCol _fslex_state lexbuf =
+and _fslex_domainSpecificMValue s vals commaSeparated dsPos _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
 # 99 "TexLexer.fsl"
                               
                                 let lastVal = s.ToString()
                                 match List.length vals, commaSeparated, String.IsNullOrWhiteSpace(lastVal) with
-                                    | (x, true, _) | (x, false, true) when x>0 -> failwithf "Unexpected comma symbol at pos: %A" commaCol
+                                    | (x, true, _) | (x, false, true) when x>0 -> failwithf "Unexpected comma symbol at pos: %A" (dsPos-1)
                                     | (_, _, true) -> failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
-                                    | (0, false, _) -> MREFVAL(lastVal)
-                                    | (_, false, _) -> MMREFVAL(List.rev (lastVal::vals))
+                                    | (_, false, _) -> (lastVal, dsPos)::vals |> List.rev |> MREFVAL
                             
-# 420 "TexLexer.fs"
+# 419 "TexLexer.fs"
           )
   | 1 -> ( 
-# 108 "TexLexer.fsl"
+# 107 "TexLexer.fsl"
                               
                                 let matched = lexeme lexbuf
                                 let matched = matched.Substring(0, matched.Length-1)
                                 if String.IsNullOrWhiteSpace(matched) then failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
                                 else
-                                  domainSpecificMValue (new StringBuilder()) ((s.Append(matched).ToString())::vals) true lexbuf.EndPos.Column lexbuf
+                                  domainSpecificMValue (new StringBuilder()) ((s.Append(matched).ToString(), dsPos)::vals) true lexbuf.EndPos.Column lexbuf
                             
-# 431 "TexLexer.fs"
+# 430 "TexLexer.fs"
           )
   | 2 -> ( 
-# 116 "TexLexer.fsl"
-                              domainSpecificMValue (s.Append(lexeme lexbuf)) vals false commaCol lexbuf 
-# 436 "TexLexer.fs"
+# 115 "TexLexer.fsl"
+                              domainSpecificMValue (s.Append(lexeme lexbuf)) vals false dsPos lexbuf 
+# 435 "TexLexer.fs"
           )
   | _ -> failwith "domainSpecificMValue"
 

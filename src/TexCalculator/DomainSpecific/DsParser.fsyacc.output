@@ -1,0 +1,952 @@
+Output file describing compiled parser placed in DomainSpecific\DsParser.fs and DomainSpecific\DsParser.fsi
+------------------------
+states = 
+state 0:
+  items:
+    _startstart ->  . start
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   shift 2
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto start: 1
+
+state 1:
+  items:
+    _startstart -> start . 
+
+  actions:
+    action 'EOF' (noprec):   accept
+    action 'EQ' (noprec):   accept
+    action 'LT' (noprec):   accept
+    action 'LE' (noprec):   accept
+    action 'GT' (noprec):   accept
+    action 'GE' (noprec):   accept
+    action 'NEQ' (noprec):   accept
+    action 'AND' (noprec):   accept
+    action 'OR' (noprec):   accept
+    action 'FOR' (noprec):   accept
+    action 'WITH' (noprec):   accept
+    action 'SELECT' (noprec):   accept
+    action 'WHERE' (noprec):   accept
+    action 'ID' (noprec):   accept
+    action 'STRING' (noprec):   accept
+    action 'INT' (noprec):   accept
+    action 'error' (noprec):   accept
+    action '#' (noprec):   accept
+    action '$$' (noprec):   accept
+
+  immediate action:   accept
+ gotos:
+
+state 2:
+  items:
+    start -> 'FOR' . 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    start -> 'FOR' . 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 3
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 3:
+  items:
+    start -> 'FOR' 'ID' . 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    start -> 'FOR' 'ID' . 'SELECT' 'ID' 'WHERE' whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   shift 4
+    action 'SELECT' (noprec):   shift 10
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 4:
+  items:
+    start -> 'FOR' 'ID' 'WITH' . 'ID' 'EQ' value 'SELECT' 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 5
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 5:
+  items:
+    start -> 'FOR' 'ID' 'WITH' 'ID' . 'EQ' value 'SELECT' 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   shift 6
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 6:
+  items:
+    start -> 'FOR' 'ID' 'WITH' 'ID' 'EQ' . value 'SELECT' 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   shift 14
+    action 'INT' (noprec):   shift 15
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto value: 7
+
+state 7:
+  items:
+    start -> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value . 'SELECT' 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   shift 8
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 8:
+  items:
+    start -> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' . 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 9
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 9:
+  items:
+    start -> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'EQ' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'LT' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'LE' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'GT' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'GE' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'NEQ' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'AND' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'OR' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'FOR' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'WITH' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'SELECT' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'WHERE' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'ID' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'STRING' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'INT' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action 'error' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action '#' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+    action '$$' (noprec):   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+
+  immediate action:   reduce start --> 'FOR' 'ID' 'WITH' 'ID' 'EQ' value 'SELECT' 'ID'
+ gotos:
+
+state 10:
+  items:
+    start -> 'FOR' 'ID' 'SELECT' . 'ID' 'WHERE' whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 11
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 11:
+  items:
+    start -> 'FOR' 'ID' 'SELECT' 'ID' . 'WHERE' whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   shift 12
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 12:
+  items:
+    start -> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' . whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 21
+    action 'STRING' (noprec):   shift 14
+    action 'INT' (noprec):   shift 15
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto value: 24
+    goto whereStatement: 13
+    goto operation: 16
+
+state 13:
+  items:
+    start -> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement . 
+    whereStatement -> whereStatement . 'AND' whereStatement
+    whereStatement -> whereStatement . 'OR' whereStatement
+
+  actions:
+    action 'EOF' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'EQ' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'LT' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'LE' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'GT' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'GE' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'NEQ' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'AND' (explicit left 10000):   shift 19
+    action 'OR' (explicit left 9999):   shift 20
+    action 'FOR' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'WITH' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'SELECT' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'WHERE' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'ID' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'STRING' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'INT' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action 'error' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action '#' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+    action '$$' (noprec):   reduce start --> 'FOR' 'ID' 'SELECT' 'ID' 'WHERE' whereStatement
+
+  immediate action: <none>
+ gotos:
+
+state 14:
+  items:
+    value -> 'STRING' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce value --> 'STRING'
+    action 'EQ' (noprec):   reduce value --> 'STRING'
+    action 'LT' (noprec):   reduce value --> 'STRING'
+    action 'LE' (noprec):   reduce value --> 'STRING'
+    action 'GT' (noprec):   reduce value --> 'STRING'
+    action 'GE' (noprec):   reduce value --> 'STRING'
+    action 'NEQ' (noprec):   reduce value --> 'STRING'
+    action 'AND' (noprec):   reduce value --> 'STRING'
+    action 'OR' (noprec):   reduce value --> 'STRING'
+    action 'FOR' (noprec):   reduce value --> 'STRING'
+    action 'WITH' (noprec):   reduce value --> 'STRING'
+    action 'SELECT' (noprec):   reduce value --> 'STRING'
+    action 'WHERE' (noprec):   reduce value --> 'STRING'
+    action 'ID' (noprec):   reduce value --> 'STRING'
+    action 'STRING' (noprec):   reduce value --> 'STRING'
+    action 'INT' (noprec):   reduce value --> 'STRING'
+    action 'error' (noprec):   reduce value --> 'STRING'
+    action '#' (noprec):   reduce value --> 'STRING'
+    action '$$' (noprec):   reduce value --> 'STRING'
+
+  immediate action:   reduce value --> 'STRING'
+ gotos:
+
+state 15:
+  items:
+    value -> 'INT' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce value --> 'INT'
+    action 'EQ' (noprec):   reduce value --> 'INT'
+    action 'LT' (noprec):   reduce value --> 'INT'
+    action 'LE' (noprec):   reduce value --> 'INT'
+    action 'GT' (noprec):   reduce value --> 'INT'
+    action 'GE' (noprec):   reduce value --> 'INT'
+    action 'NEQ' (noprec):   reduce value --> 'INT'
+    action 'AND' (noprec):   reduce value --> 'INT'
+    action 'OR' (noprec):   reduce value --> 'INT'
+    action 'FOR' (noprec):   reduce value --> 'INT'
+    action 'WITH' (noprec):   reduce value --> 'INT'
+    action 'SELECT' (noprec):   reduce value --> 'INT'
+    action 'WHERE' (noprec):   reduce value --> 'INT'
+    action 'ID' (noprec):   reduce value --> 'INT'
+    action 'STRING' (noprec):   reduce value --> 'INT'
+    action 'INT' (noprec):   reduce value --> 'INT'
+    action 'error' (noprec):   reduce value --> 'INT'
+    action '#' (noprec):   reduce value --> 'INT'
+    action '$$' (noprec):   reduce value --> 'INT'
+
+  immediate action:   reduce value --> 'INT'
+ gotos:
+
+state 16:
+  items:
+    whereStatement -> operation . 
+
+  actions:
+    action 'EOF' (noprec):   reduce whereStatement --> operation
+    action 'EQ' (noprec):   reduce whereStatement --> operation
+    action 'LT' (noprec):   reduce whereStatement --> operation
+    action 'LE' (noprec):   reduce whereStatement --> operation
+    action 'GT' (noprec):   reduce whereStatement --> operation
+    action 'GE' (noprec):   reduce whereStatement --> operation
+    action 'NEQ' (noprec):   reduce whereStatement --> operation
+    action 'AND' (noprec):   reduce whereStatement --> operation
+    action 'OR' (noprec):   reduce whereStatement --> operation
+    action 'FOR' (noprec):   reduce whereStatement --> operation
+    action 'WITH' (noprec):   reduce whereStatement --> operation
+    action 'SELECT' (noprec):   reduce whereStatement --> operation
+    action 'WHERE' (noprec):   reduce whereStatement --> operation
+    action 'ID' (noprec):   reduce whereStatement --> operation
+    action 'STRING' (noprec):   reduce whereStatement --> operation
+    action 'INT' (noprec):   reduce whereStatement --> operation
+    action 'error' (noprec):   reduce whereStatement --> operation
+    action '#' (noprec):   reduce whereStatement --> operation
+    action '$$' (noprec):   reduce whereStatement --> operation
+
+  immediate action:   reduce whereStatement --> operation
+ gotos:
+
+state 17:
+  items:
+    whereStatement -> whereStatement . 'AND' whereStatement
+    whereStatement -> whereStatement 'AND' whereStatement . 
+    whereStatement -> whereStatement . 'OR' whereStatement
+
+  actions:
+    action 'EOF' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'EQ' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'LT' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'LE' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'GT' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'GE' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'NEQ' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'AND' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'OR' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'FOR' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'WITH' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'SELECT' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'WHERE' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'ID' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'STRING' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'INT' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action 'error' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action '#' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+    action '$$' (explicit left 10000):   reduce whereStatement --> whereStatement 'AND' whereStatement
+
+  immediate action: <none>
+ gotos:
+
+state 18:
+  items:
+    whereStatement -> whereStatement . 'AND' whereStatement
+    whereStatement -> whereStatement . 'OR' whereStatement
+    whereStatement -> whereStatement 'OR' whereStatement . 
+
+  actions:
+    action 'EOF' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'EQ' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'LT' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'LE' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'GT' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'GE' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'NEQ' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'AND' (explicit left 10000):   shift 19
+    action 'OR' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'FOR' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'WITH' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'SELECT' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'WHERE' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'ID' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'STRING' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'INT' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action 'error' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action '#' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+    action '$$' (explicit left 9999):   reduce whereStatement --> whereStatement 'OR' whereStatement
+
+  immediate action: <none>
+ gotos:
+
+state 19:
+  items:
+    whereStatement -> whereStatement 'AND' . whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 21
+    action 'STRING' (noprec):   shift 14
+    action 'INT' (noprec):   shift 15
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto value: 24
+    goto whereStatement: 17
+    goto operation: 16
+
+state 20:
+  items:
+    whereStatement -> whereStatement 'OR' . whereStatement
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 21
+    action 'STRING' (noprec):   shift 14
+    action 'INT' (noprec):   shift 15
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto value: 24
+    goto whereStatement: 18
+    goto operation: 16
+
+state 21:
+  items:
+    operation -> 'ID' . operationType value
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   shift 27
+    action 'LT' (noprec):   shift 28
+    action 'LE' (noprec):   shift 29
+    action 'GT' (noprec):   shift 30
+    action 'GE' (noprec):   shift 31
+    action 'NEQ' (noprec):   shift 32
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto operationType: 22
+
+state 22:
+  items:
+    operation -> 'ID' operationType . value
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   shift 14
+    action 'INT' (noprec):   shift 15
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto value: 23
+
+state 23:
+  items:
+    operation -> 'ID' operationType value . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operation --> 'ID' operationType value
+    action 'EQ' (noprec):   reduce operation --> 'ID' operationType value
+    action 'LT' (noprec):   reduce operation --> 'ID' operationType value
+    action 'LE' (noprec):   reduce operation --> 'ID' operationType value
+    action 'GT' (noprec):   reduce operation --> 'ID' operationType value
+    action 'GE' (noprec):   reduce operation --> 'ID' operationType value
+    action 'NEQ' (noprec):   reduce operation --> 'ID' operationType value
+    action 'AND' (noprec):   reduce operation --> 'ID' operationType value
+    action 'OR' (noprec):   reduce operation --> 'ID' operationType value
+    action 'FOR' (noprec):   reduce operation --> 'ID' operationType value
+    action 'WITH' (noprec):   reduce operation --> 'ID' operationType value
+    action 'SELECT' (noprec):   reduce operation --> 'ID' operationType value
+    action 'WHERE' (noprec):   reduce operation --> 'ID' operationType value
+    action 'ID' (noprec):   reduce operation --> 'ID' operationType value
+    action 'STRING' (noprec):   reduce operation --> 'ID' operationType value
+    action 'INT' (noprec):   reduce operation --> 'ID' operationType value
+    action 'error' (noprec):   reduce operation --> 'ID' operationType value
+    action '#' (noprec):   reduce operation --> 'ID' operationType value
+    action '$$' (noprec):   reduce operation --> 'ID' operationType value
+
+  immediate action:   reduce operation --> 'ID' operationType value
+ gotos:
+
+state 24:
+  items:
+    operation -> value . operationType 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   shift 27
+    action 'LT' (noprec):   shift 28
+    action 'LE' (noprec):   shift 29
+    action 'GT' (noprec):   shift 30
+    action 'GE' (noprec):   shift 31
+    action 'NEQ' (noprec):   shift 32
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   error
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+    goto operationType: 25
+
+state 25:
+  items:
+    operation -> value operationType . 'ID'
+
+  actions:
+    action 'EOF' (noprec):   error
+    action 'EQ' (noprec):   error
+    action 'LT' (noprec):   error
+    action 'LE' (noprec):   error
+    action 'GT' (noprec):   error
+    action 'GE' (noprec):   error
+    action 'NEQ' (noprec):   error
+    action 'AND' (noprec):   error
+    action 'OR' (noprec):   error
+    action 'FOR' (noprec):   error
+    action 'WITH' (noprec):   error
+    action 'SELECT' (noprec):   error
+    action 'WHERE' (noprec):   error
+    action 'ID' (noprec):   shift 26
+    action 'STRING' (noprec):   error
+    action 'INT' (noprec):   error
+    action 'error' (noprec):   error
+    action '#' (noprec):   error
+    action '$$' (noprec):   error
+
+  immediate action: <none>
+ gotos:
+
+state 26:
+  items:
+    operation -> value operationType 'ID' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operation --> value operationType 'ID'
+    action 'EQ' (noprec):   reduce operation --> value operationType 'ID'
+    action 'LT' (noprec):   reduce operation --> value operationType 'ID'
+    action 'LE' (noprec):   reduce operation --> value operationType 'ID'
+    action 'GT' (noprec):   reduce operation --> value operationType 'ID'
+    action 'GE' (noprec):   reduce operation --> value operationType 'ID'
+    action 'NEQ' (noprec):   reduce operation --> value operationType 'ID'
+    action 'AND' (noprec):   reduce operation --> value operationType 'ID'
+    action 'OR' (noprec):   reduce operation --> value operationType 'ID'
+    action 'FOR' (noprec):   reduce operation --> value operationType 'ID'
+    action 'WITH' (noprec):   reduce operation --> value operationType 'ID'
+    action 'SELECT' (noprec):   reduce operation --> value operationType 'ID'
+    action 'WHERE' (noprec):   reduce operation --> value operationType 'ID'
+    action 'ID' (noprec):   reduce operation --> value operationType 'ID'
+    action 'STRING' (noprec):   reduce operation --> value operationType 'ID'
+    action 'INT' (noprec):   reduce operation --> value operationType 'ID'
+    action 'error' (noprec):   reduce operation --> value operationType 'ID'
+    action '#' (noprec):   reduce operation --> value operationType 'ID'
+    action '$$' (noprec):   reduce operation --> value operationType 'ID'
+
+  immediate action:   reduce operation --> value operationType 'ID'
+ gotos:
+
+state 27:
+  items:
+    operationType -> 'EQ' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'EQ'
+    action 'EQ' (noprec):   reduce operationType --> 'EQ'
+    action 'LT' (noprec):   reduce operationType --> 'EQ'
+    action 'LE' (noprec):   reduce operationType --> 'EQ'
+    action 'GT' (noprec):   reduce operationType --> 'EQ'
+    action 'GE' (noprec):   reduce operationType --> 'EQ'
+    action 'NEQ' (noprec):   reduce operationType --> 'EQ'
+    action 'AND' (noprec):   reduce operationType --> 'EQ'
+    action 'OR' (noprec):   reduce operationType --> 'EQ'
+    action 'FOR' (noprec):   reduce operationType --> 'EQ'
+    action 'WITH' (noprec):   reduce operationType --> 'EQ'
+    action 'SELECT' (noprec):   reduce operationType --> 'EQ'
+    action 'WHERE' (noprec):   reduce operationType --> 'EQ'
+    action 'ID' (noprec):   reduce operationType --> 'EQ'
+    action 'STRING' (noprec):   reduce operationType --> 'EQ'
+    action 'INT' (noprec):   reduce operationType --> 'EQ'
+    action 'error' (noprec):   reduce operationType --> 'EQ'
+    action '#' (noprec):   reduce operationType --> 'EQ'
+    action '$$' (noprec):   reduce operationType --> 'EQ'
+
+  immediate action:   reduce operationType --> 'EQ'
+ gotos:
+
+state 28:
+  items:
+    operationType -> 'LT' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'LT'
+    action 'EQ' (noprec):   reduce operationType --> 'LT'
+    action 'LT' (noprec):   reduce operationType --> 'LT'
+    action 'LE' (noprec):   reduce operationType --> 'LT'
+    action 'GT' (noprec):   reduce operationType --> 'LT'
+    action 'GE' (noprec):   reduce operationType --> 'LT'
+    action 'NEQ' (noprec):   reduce operationType --> 'LT'
+    action 'AND' (noprec):   reduce operationType --> 'LT'
+    action 'OR' (noprec):   reduce operationType --> 'LT'
+    action 'FOR' (noprec):   reduce operationType --> 'LT'
+    action 'WITH' (noprec):   reduce operationType --> 'LT'
+    action 'SELECT' (noprec):   reduce operationType --> 'LT'
+    action 'WHERE' (noprec):   reduce operationType --> 'LT'
+    action 'ID' (noprec):   reduce operationType --> 'LT'
+    action 'STRING' (noprec):   reduce operationType --> 'LT'
+    action 'INT' (noprec):   reduce operationType --> 'LT'
+    action 'error' (noprec):   reduce operationType --> 'LT'
+    action '#' (noprec):   reduce operationType --> 'LT'
+    action '$$' (noprec):   reduce operationType --> 'LT'
+
+  immediate action:   reduce operationType --> 'LT'
+ gotos:
+
+state 29:
+  items:
+    operationType -> 'LE' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'LE'
+    action 'EQ' (noprec):   reduce operationType --> 'LE'
+    action 'LT' (noprec):   reduce operationType --> 'LE'
+    action 'LE' (noprec):   reduce operationType --> 'LE'
+    action 'GT' (noprec):   reduce operationType --> 'LE'
+    action 'GE' (noprec):   reduce operationType --> 'LE'
+    action 'NEQ' (noprec):   reduce operationType --> 'LE'
+    action 'AND' (noprec):   reduce operationType --> 'LE'
+    action 'OR' (noprec):   reduce operationType --> 'LE'
+    action 'FOR' (noprec):   reduce operationType --> 'LE'
+    action 'WITH' (noprec):   reduce operationType --> 'LE'
+    action 'SELECT' (noprec):   reduce operationType --> 'LE'
+    action 'WHERE' (noprec):   reduce operationType --> 'LE'
+    action 'ID' (noprec):   reduce operationType --> 'LE'
+    action 'STRING' (noprec):   reduce operationType --> 'LE'
+    action 'INT' (noprec):   reduce operationType --> 'LE'
+    action 'error' (noprec):   reduce operationType --> 'LE'
+    action '#' (noprec):   reduce operationType --> 'LE'
+    action '$$' (noprec):   reduce operationType --> 'LE'
+
+  immediate action:   reduce operationType --> 'LE'
+ gotos:
+
+state 30:
+  items:
+    operationType -> 'GT' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'GT'
+    action 'EQ' (noprec):   reduce operationType --> 'GT'
+    action 'LT' (noprec):   reduce operationType --> 'GT'
+    action 'LE' (noprec):   reduce operationType --> 'GT'
+    action 'GT' (noprec):   reduce operationType --> 'GT'
+    action 'GE' (noprec):   reduce operationType --> 'GT'
+    action 'NEQ' (noprec):   reduce operationType --> 'GT'
+    action 'AND' (noprec):   reduce operationType --> 'GT'
+    action 'OR' (noprec):   reduce operationType --> 'GT'
+    action 'FOR' (noprec):   reduce operationType --> 'GT'
+    action 'WITH' (noprec):   reduce operationType --> 'GT'
+    action 'SELECT' (noprec):   reduce operationType --> 'GT'
+    action 'WHERE' (noprec):   reduce operationType --> 'GT'
+    action 'ID' (noprec):   reduce operationType --> 'GT'
+    action 'STRING' (noprec):   reduce operationType --> 'GT'
+    action 'INT' (noprec):   reduce operationType --> 'GT'
+    action 'error' (noprec):   reduce operationType --> 'GT'
+    action '#' (noprec):   reduce operationType --> 'GT'
+    action '$$' (noprec):   reduce operationType --> 'GT'
+
+  immediate action:   reduce operationType --> 'GT'
+ gotos:
+
+state 31:
+  items:
+    operationType -> 'GE' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'GE'
+    action 'EQ' (noprec):   reduce operationType --> 'GE'
+    action 'LT' (noprec):   reduce operationType --> 'GE'
+    action 'LE' (noprec):   reduce operationType --> 'GE'
+    action 'GT' (noprec):   reduce operationType --> 'GE'
+    action 'GE' (noprec):   reduce operationType --> 'GE'
+    action 'NEQ' (noprec):   reduce operationType --> 'GE'
+    action 'AND' (noprec):   reduce operationType --> 'GE'
+    action 'OR' (noprec):   reduce operationType --> 'GE'
+    action 'FOR' (noprec):   reduce operationType --> 'GE'
+    action 'WITH' (noprec):   reduce operationType --> 'GE'
+    action 'SELECT' (noprec):   reduce operationType --> 'GE'
+    action 'WHERE' (noprec):   reduce operationType --> 'GE'
+    action 'ID' (noprec):   reduce operationType --> 'GE'
+    action 'STRING' (noprec):   reduce operationType --> 'GE'
+    action 'INT' (noprec):   reduce operationType --> 'GE'
+    action 'error' (noprec):   reduce operationType --> 'GE'
+    action '#' (noprec):   reduce operationType --> 'GE'
+    action '$$' (noprec):   reduce operationType --> 'GE'
+
+  immediate action:   reduce operationType --> 'GE'
+ gotos:
+
+state 32:
+  items:
+    operationType -> 'NEQ' . 
+
+  actions:
+    action 'EOF' (noprec):   reduce operationType --> 'NEQ'
+    action 'EQ' (noprec):   reduce operationType --> 'NEQ'
+    action 'LT' (noprec):   reduce operationType --> 'NEQ'
+    action 'LE' (noprec):   reduce operationType --> 'NEQ'
+    action 'GT' (noprec):   reduce operationType --> 'NEQ'
+    action 'GE' (noprec):   reduce operationType --> 'NEQ'
+    action 'NEQ' (noprec):   reduce operationType --> 'NEQ'
+    action 'AND' (noprec):   reduce operationType --> 'NEQ'
+    action 'OR' (noprec):   reduce operationType --> 'NEQ'
+    action 'FOR' (noprec):   reduce operationType --> 'NEQ'
+    action 'WITH' (noprec):   reduce operationType --> 'NEQ'
+    action 'SELECT' (noprec):   reduce operationType --> 'NEQ'
+    action 'WHERE' (noprec):   reduce operationType --> 'NEQ'
+    action 'ID' (noprec):   reduce operationType --> 'NEQ'
+    action 'STRING' (noprec):   reduce operationType --> 'NEQ'
+    action 'INT' (noprec):   reduce operationType --> 'NEQ'
+    action 'error' (noprec):   reduce operationType --> 'NEQ'
+    action '#' (noprec):   reduce operationType --> 'NEQ'
+    action '$$' (noprec):   reduce operationType --> 'NEQ'
+
+  immediate action:   reduce operationType --> 'NEQ'
+ gotos:
+
+
+startStates = 0
+------------------------

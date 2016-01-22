@@ -2,18 +2,37 @@
 open TexAst
 open Microsoft.FSharp.Text.Lexing
 
-let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificToken -> DomainSpecificAst>
+let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificToken -> obj>
 
-let analyzeDomainSpecificLanguage token = DsAst(domainSpecificAnalyzer token)
+let analyzeDomainSpecificLanguage token = domainSpecificAnalyzer token
+
+let analyzeDomainSpecificSource token startPos = 
+    try
+      analyzeDomainSpecificLanguage token
+    with
+      | DomainSpecificParseException(fString, pos) -> failwithf "%s at pos: %u" fString (startPos)
+
+let analyzeDomainSpecificSingleSource src pos = 
+    analyzeDomainSpecificSource (SRefValueSrc(src)) pos |> SRefValue
+
+let analyzeDomainSpecificSources sources = 
+    let rec analyzeDomainSpecificSourcesInternal sources state = 
+        match sources with
+          | [] -> state
+          | (src, pos)::t -> analyzeDomainSpecificSourcesInternal t ((analyzeDomainSpecificSource (MRefValueSrc(src)) pos)::state)
+        
+    analyzeDomainSpecificSourcesInternal sources [] 
+    |> List.rev 
+    |> MRefValue
 
 %}
 
 %token <int> INT
 %token <string> DIFF
 %token <string> ID
-%token <string> SREFVAL
-%token <string> MREFVAL
-%token <string list> MMREFVAL
+%token <string*int> SREFVAL
+%token <(string*int) list> MREFVAL
+%token LSREFBRACKET RSREFBRACKET LMREFBRACKET RMREFBRACKET
 %token LSQBRACE RSQBRACE LPAREN RPAREN LCURLY RCURLY EXCL CARET EQ UNDERSCORE SLASH COMMA
 %token PLUS SUB MUL DIV 
 %token FRAC SQRT SUM PROD INTEGRAL TIMES INFTY TO LIM BMOD
@@ -54,15 +73,15 @@ power:
     LCURLY expression RCURLY CARET LCURLY expression RCURLY  { Pow($2, $6) }
 
 integral:
-    SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression RCURLY DIFF { Integral($12, $14, $5, $9) }
+    SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression RCURLY DIFF 
+                                                                                                    { Integral($12, $14, $5, $9) }
 
 limit:
     SLASH LIM UNDERSCORE LCURLY ID TO expression RCURLY LCURLY expression RCURLY  { Lim($10, $5, $7) }
 
 refValue:
-    | SREFVAL      { analyzeDomainSpecificLanguage (DomainSpecificToken.SRefValue($1))  }
-	| MREFVAL      { analyzeDomainSpecificLanguage (DomainSpecificToken.MRefValue($1))  }
-	| MMREFVAL     { analyzeDomainSpecificLanguage (DomainSpecificToken.MMRefValue($1)) }
+    | SREFVAL      { analyzeDomainSpecificSingleSource (fst $1) (snd $1) |> DsAst }
+	| MREFVAL      { analyzeDomainSpecificSources $1 |> DsAst }
 
 lowPriorityBinaryOperator:
     | PLUS  { PLUS }
@@ -88,16 +107,18 @@ highPriorityFunction:
 	| DIFF                       { Diff($1) }
 
 mediumPriorityBinaryExpression:
-    | highPriorityFunction mediumPriorityBinaryOperator highPriorityFunction  { 
-                                                                                  match $2 with
-                                                                                      | MUL -> Mul($1, $3)
-                                                                                      | DIV -> Div($1, $3)
-                                                                              }
-    | mediumPriorityBinaryExpression mediumPriorityBinaryOperator highPriorityFunction  { 
-                                                                                            match $2 with
-                                                                                                | MUL -> Mul($1, $3)
-                                                                                                | DIV -> Div($1, $3)
-                                                                                        }
+    | highPriorityFunction mediumPriorityBinaryOperator highPriorityFunction  
+                                                          { 
+                                                              match $2 with
+                                                                  | MUL -> Mul($1, $3)
+                                                                  | DIV -> Div($1, $3)
+                                                          }
+    | mediumPriorityBinaryExpression mediumPriorityBinaryOperator highPriorityFunction  
+                                                          { 
+                                                              match $2 with
+                                                                  | MUL -> Mul($1, $3)
+                                                                  | DIV -> Div($1, $3)
+                                                          }
 
 lowPriorityBinaryExpression:
     | expression lowPriorityBinaryOperator expression     { 
@@ -105,7 +126,6 @@ lowPriorityBinaryExpression:
                                                                | PLUS -> Plus($1, $3)
                                                                | SUB -> Sub($1, $3)
                                                           }
-
 
 argumentSet:
     | expression  { [$1] }

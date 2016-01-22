@@ -1,19 +1,18 @@
 ﻿module TexAst
 
+exception DomainSpecificParseException of string * int
+
 type Constant = 
     | Pi
     | E
 
 type DomainSpecificToken = 
-    | SRefValue of string
-    | MRefValue of string
-    | MMRefValue of string list
+    | SRefValueSrc of string
+    | MRefValueSrc of string
 
 type DomainSpecificAst =
     | SRefValue of obj
-    | MRefValue of obj
-    | MMRefValue of obj list
-
+    | MRefValue of obj list
 
 type Expr = 
     | Plus of Expr * Expr
@@ -40,4 +39,3 @@ type SpecAnalyzer() =
     interface DomainSpecificAnalyzer with
         member this.Analyze src = 
             SRefValue(1)
-
