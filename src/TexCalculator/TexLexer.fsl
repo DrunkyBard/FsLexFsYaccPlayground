@@ -35,6 +35,7 @@ let times = "times"
 let infinite = "infty"
 let to = "to"
 let limit = "lim"
+let text = "text"
 
 let digit = ['0' - '9']
 let char = ['a'-'z' 'A'-'Z'] 
@@ -71,6 +72,7 @@ rule lex = parse
 	| infinite      { INFTY }
 	| to            { TO }
 	| limit         { LIM }
+	| text          { TEXT }
 	| "d"           { diff lexbuf }
 	| "e"           { EULERNUM }
 	| "\\pi"        { PI }
