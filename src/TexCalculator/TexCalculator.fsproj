@@ -80,6 +80,7 @@
     <Compile Include="DomainSpecific\DsLex.fs" />
     <Compile Include="DomainSpecific\DsParserExtensions.fs" />
     <Compile Include="Program.fs" />
+    <Compile Include="TexInterpreter.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsLexYacc.Runtime">

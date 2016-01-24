@@ -19,16 +19,16 @@ type Expr =
     | Sub of Expr * Expr
     | Mul of Expr * Expr
     | Div of Expr * Expr
-    | Sum of string option*string option*(Expr list)  // idxIdentifier x upperBoundIdentifier x args
-    | Prod of string option*string option*(Expr list) // idxIdentifier x upperBoundIdentifier x args
+    | Sum of string option * string option * (Expr list)  // idxIdentifier x upperBoundIdentifier x args
+    | Prod of string option * string option * (Expr list) // idxIdentifier x upperBoundIdentifier x args
     | Fact of Expr
-    | Pow of Expr*Expr
+    | Pow of Expr * Expr
     | Int of int
     | Var of string
     | Diff of string
     | Constant of Constant
-    | Integral of Expr*string*Expr*Expr // function x differentialVariable x lowerBound x upperBound
-    | Lim of Expr*string*Expr  // function x limitVariable x approacheValue
+    | Integral of Expr * string * Expr * Expr // function x differentialVariable x lowerBound x upperBound
+    | Lim of Expr * string * Expr  // function x limitVariable x approacheValue
     | DsAst of DomainSpecificAst
     | Neg of Expr
 
