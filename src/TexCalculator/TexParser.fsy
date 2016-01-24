@@ -28,6 +28,7 @@ let analyzeDomainSpecificSources sources =
 %}
 
 %token <int> INT
+%token <float> FLOAT
 %token <string> DIFF
 %token <string> ID
 %token <string*int> SREFVAL
@@ -103,6 +104,7 @@ mediumPriorityBinaryOperator:
 
 highPriorityFunction:
     | INT                        { Int($1) }
+    | FLOAT                      { Float($1) }
     | LPAREN expression RPAREN   { $2 }
 	| sum                        { $1 }
 	| prod                       { $1 }
@@ -114,7 +116,6 @@ highPriorityFunction:
 	| limit                      { $1 }
 	| refPattern                 { $1 }
 	| ID                         { Var($1) }
-	| DIFF                       { Diff($1) }
 
 mediumPriorityBinaryExpression:
     | highPriorityFunction mediumPriorityBinaryOperator highPriorityFunction  

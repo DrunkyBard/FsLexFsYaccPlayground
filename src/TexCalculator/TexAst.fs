@@ -24,8 +24,8 @@ type Expr =
     | Fact of Expr
     | Pow of Expr * Expr
     | Int of int
+    | Float of float
     | Var of string
-    | Diff of string
     | Constant of Constant
     | Integral of Expr * string * Expr * Expr // function x differentialVariable x lowerBound x upperBound
     | Lim of Expr * string * Expr  // function x limitVariable x approacheValue

@@ -42,7 +42,7 @@ let main argv =
 //    let stringFormula = "2+3/4"
 //    let stringFormula = "1*2+\sum_{i}^{N}{N*\\text{[||for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2||]}, 2, 5*2}"
 //    let stringFormula = "1+2"
-    let stringFormula = "\int_{0}^{10}{x+10} d{x}"
+    let stringFormula = "2*3+\int_{0}^{10}{x+10} d{x} / 4"
     let lexBuf = LexBuffer<char>.FromString stringFormula
 //    let lexems = readLexems  lexBuf 
 //    let par = Expression.Parameter(typeof<int>, "x")

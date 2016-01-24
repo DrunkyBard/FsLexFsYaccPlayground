@@ -39,6 +39,7 @@ type token =
   | SREFVAL of (string*int)
   | ID of (string)
   | DIFF of (string)
+  | FLOAT of (float)
   | INT of (int)
 type tokenId = 
     | TOKEN_EOF
@@ -79,6 +80,7 @@ type tokenId =
     | TOKEN_SREFVAL
     | TOKEN_ID
     | TOKEN_DIFF
+    | TOKEN_FLOAT
     | TOKEN_INT
     | TOKEN_end_of_input
     | TOKEN_error

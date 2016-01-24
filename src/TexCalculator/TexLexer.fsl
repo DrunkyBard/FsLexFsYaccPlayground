@@ -38,14 +38,17 @@ let limit = "lim"
 let text = "text"
 
 let digit = ['0' - '9']
+let frac = '.' digit*
 let char = ['a'-'z' 'A'-'Z'] 
 let int = digit+
+let float = digit* frac?
 let identifier  = char(char|digit)*
 let ignore = ' ' | '\t' | "\\," | "\\mathrm"
 
 rule lex = parse
     | ignore        { lex lexbuf }
 	| int           { INT (int (lexeme lexbuf)) }
+	| float         { FLOAT (float (lexeme lexbuf)) }
 	| plus          { PLUS }
 	| sub           { SUB }
 	| mul           { MUL }
