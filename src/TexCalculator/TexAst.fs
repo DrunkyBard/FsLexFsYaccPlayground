@@ -19,8 +19,11 @@ type Expr =
     | Sub of Expr * Expr
     | Mul of Expr * Expr
     | Div of Expr * Expr
-    | Sum of string option * string option * (Expr list)  // idxIdentifier x upperBoundIdentifier x args
-    | Prod of string option * string option * (Expr list) // idxIdentifier x upperBoundIdentifier x args
+    | Sum of Expr list  
+    | Prod of Expr list 
+    | Sqrt of Expr * Expr // func * power
+    | Sin of Expr * Expr // func * power
+    | Cos of Expr * Expr // func * power
     | Fact of Expr
     | Pow of Expr * Expr
     | Int of int

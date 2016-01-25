@@ -22,7 +22,7 @@ let where = "where"
 let andKeyword = "and"
 let or = "or"
 let le = "<="
-let lt = "<1"
+let lt = "<"
 let ge = ">="
 let gt = ">" 
 let eq = "="
@@ -53,6 +53,7 @@ rule lex single = parse
   | identifier { ID(lexeme lexbuf) }
   | "\""    { lexString (new StringBuilder()) lexbuf }
   | eof     { EOF }
+  | _       { failwithf "Unrecognized input at pos: '%A'" lexbuf.StartPos.Column }
 
 and lexString s = parse
   | "\""   { STRING(s.ToString()) }

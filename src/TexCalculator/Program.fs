@@ -22,9 +22,12 @@ let readLexems1 single lexbuf =
     
     readLexemsInternal [] (DsLex.lex single lexbuf) |> List.rev
 
+type q = 
+ |A
+ |B
+
 [<EntryPoint>]
 let main argv = 
-
 //    let stringFormula = "for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2"
 //    let lexBuf = LexBuffer<char>.FromString stringFormula
 //    let lexems = readLexems1 false lexBuf
@@ -42,15 +45,16 @@ let main argv =
 //    let stringFormula = "2+3/4"
 //    let stringFormula = "1*2+\sum_{i}^{N}{N*\\text{[||for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2||]}, 2, 5*2}"
 //    let stringFormula = "1+2"
-    let stringFormula = "2*3+\int_{0}^{10}{x+10} d{x} / 4"
+    let stringFormula = "\int_{0}^{\pi/2}{\sin{x}} d{x}"
     let lexBuf = LexBuffer<char>.FromString stringFormula
 //    let lexems = readLexems  lexBuf 
 //    let par = Expression.Parameter(typeof<int>, "x")
 //    let lam = Expression.Lambda<System.Func<int, int>>(
 //        Expression.Add(par, Expression.Constant(2)), par).Compile()
 //    let w = lam.Invoke(5)
+//    let res = MathNet.Numerics.Integrate.OnClosedInterval((fun x -> x), 5., 1.)
     let ast = (DsParserExtensions.parse, lexBuf) ||> TexParser.parse
-    let res = TexInterpreter.execute ast
+    let res = TexInterpreter(DomainSpecificInterpreter.evalSValue, DomainSpecificInterpreter.evalMValue).Eval ast
     printfn "%A" ast
     0
 

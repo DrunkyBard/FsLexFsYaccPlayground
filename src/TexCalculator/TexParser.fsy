@@ -36,7 +36,7 @@ let analyzeDomainSpecificSources sources =
 %token LSREFBRACKET RSREFBRACKET LMREFBRACKET RMREFBRACKET
 %token LSQBRACE RSQBRACE LPAREN RPAREN LCURLY RCURLY EXCL CARET EQ UNDERSCORE SLASH COMMA
 %token PLUS SUB MUL DIV 
-%token FRAC SQRT SUM PROD INTEGRAL TIMES INFTY TO LIM BMOD TEXT
+%token FRAC SQRT SUM PROD INTEGRAL TIMES INFTY TO LIM BMOD TEXT SIN COS
 %token PI EULERNUM
 %token EOF
 
@@ -59,16 +59,10 @@ constant:
 	| EULERNUM { Constant(E) }
 
 sum:
-    | SLASH SUM LCURLY argumentSet RCURLY                                                     { Sum(None, None, List.rev $4) }
-    | SLASH SUM UNDERSCORE LCURLY ID RCURLY CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY  { Sum(Some($5), Some($9), List.rev $12) }
-    | SLASH SUM UNDERSCORE LCURLY ID RCURLY LCURLY argumentSet RCURLY                         { Sum(Some($5), None, List.rev $8) }
-    | SLASH SUM CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY                              { Sum(None, Some($5), List.rev $8) }
+    | SLASH SUM LCURLY argumentSet RCURLY      { Sum(List.rev $4) }
 
 prod:
-    | SLASH PROD LCURLY argumentSet RCURLY                                                     { Prod(None, None, List.rev $4) }
-    | SLASH PROD UNDERSCORE LCURLY ID RCURLY CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY  { Prod(Some($5), Some($9), List.rev $12) }
-    | SLASH PROD UNDERSCORE LCURLY ID RCURLY LCURLY argumentSet RCURLY                         { Prod(Some($5), None, List.rev $8) }
-    | SLASH PROD CARET LCURLY ID RCURLY LCURLY argumentSet RCURLY                              { Prod(None, Some($5), List.rev $8) }
+    | SLASH PROD LCURLY argumentSet RCURLY     { Prod(List.rev $4) }
 
 fact:
     highPriorityFunction EXCL  { Fact($1) }
@@ -90,6 +84,12 @@ refPattern:
     | refValue                           { $1 }
 	| SLASH TEXT LCURLY refValue RCURLY  { $4 }
 
+trigonometry:
+    | SLASH SIN LCURLY expression RCURLY                                 { Sin($4, Int(1)) }
+    | SLASH SIN CARET LCURLY expression RCURLY LCURLY expression RCURLY  { Sin($8, $5) }
+    | SLASH COS LCURLY expression RCURLY                                 { Cos($4, Int(1)) }
+    | SLASH COS CARET LCURLY expression RCURLY LCURLY expression RCURLY  { Cos($8, $5) }
+
 refValue:
     | SREFVAL      { analyzeDomainSpecificSingleSource (fst $1) (snd $1) |> DsAst }
 	| MREFVAL      { analyzeDomainSpecificSources $1 |> DsAst }
@@ -99,13 +99,15 @@ lowPriorityBinaryOperator:
     | SUB   { SUB }
 
 mediumPriorityBinaryOperator:
-    | MUL   { MUL }
-    | DIV   { DIV }
+    | MUL         { MUL }
+	| SLASH TIMES { MUL }
+    | DIV         { DIV }
 
 highPriorityFunction:
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }
     | LPAREN expression RPAREN   { $2 }
+	| trigonometry               { $1 }
 	| sum                        { $1 }
 	| prod                       { $1 }
 	| fact                       { $1 }

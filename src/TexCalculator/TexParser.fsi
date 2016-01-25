@@ -15,6 +15,8 @@ type token =
   | LIM
   | BMOD
   | TEXT
+  | SIN
+  | COS
   | PLUS
   | SUB
   | MUL
@@ -56,6 +58,8 @@ type tokenId =
     | TOKEN_LIM
     | TOKEN_BMOD
     | TOKEN_TEXT
+    | TOKEN_SIN
+    | TOKEN_COS
     | TOKEN_PLUS
     | TOKEN_SUB
     | TOKEN_MUL
@@ -97,6 +101,7 @@ type nonTerminalId =
     | NONTERM_integral
     | NONTERM_limit
     | NONTERM_refPattern
+    | NONTERM_trigonometry
     | NONTERM_refValue
     | NONTERM_lowPriorityBinaryOperator
     | NONTERM_mediumPriorityBinaryOperator

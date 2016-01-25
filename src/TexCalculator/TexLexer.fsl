@@ -29,6 +29,8 @@ let frac = "frac"
 let sqrt = "sqrt"
 let bmod = "bmod"
 let sum = "sum"
+let sin = "sin"
+let cos = "cos"
 let prod = "prod"
 let integral = "int"
 let times = "times"
@@ -52,7 +54,9 @@ rule lex = parse
 	| plus          { PLUS }
 	| sub           { SUB }
 	| mul           { MUL }
-	| div           { DIV }
+    | div           { DIV }
+    | sin           { SIN }
+    | cos           { COS }
 	| caret         { CARET }
 	| slash         { SLASH }
 	| lParen        { LPAREN }
