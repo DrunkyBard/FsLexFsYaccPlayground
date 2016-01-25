@@ -28,7 +28,7 @@ type Expr =
     | Var of string
     | Constant of Constant
     | Integral of Expr * string * Expr * Expr // function x differentialVariable x lowerBound x upperBound
-    | Lim of Expr * string * Expr  // function x limitVariable x approacheValue
+    | Lim of Expr * string * Expr  // function x limitVariable x approximationValue
     | DsAst of DomainSpecificAst
     | Neg of Expr
 

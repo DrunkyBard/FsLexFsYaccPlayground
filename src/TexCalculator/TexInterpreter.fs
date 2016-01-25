@@ -11,11 +11,11 @@ let rec execute (ast: TexAst.Expr) : float =
         | Mul (e1, e2) -> execute(e1) * execute(e2)
         | Sub (e1, e2) -> execute(e1) - execute(e2)
         | Div (e1, e2) -> execute(e1) / execute(e2)
-        | Pow (e1, e2) -> System.Math.Pow(float(execute(e1)), float(execute(e2)))
+        | Pow (e1, e2) -> Math.Pow(float(execute(e1)), float(execute(e2)))
         | Int(x) -> float(x)
         | Float(x) -> x
-        | Constant(Pi) -> System.Math.PI
-        | Constant(E) -> System.Math.E
+        | Constant(Pi) -> Math.PI
+        | Constant(E) -> Math.E
         | Neg(e) -> -1. * execute(e)
         | Integral(func, diffVar, lowBE, uppBE) -> 
             let diffParameter = Expression.Parameter(typeof<float>, diffVar)
