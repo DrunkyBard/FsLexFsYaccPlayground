@@ -1,12 +1,14 @@
 ﻿module Program
+
+open System
 open TexParser
 open TexInterpreter
-open TexAst
-open DsLex
 open DsParser
 open Microsoft.FSharp.Text.Lexing
 open ParserExtensions
-open System.Linq.Expressions
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Quotations.DerivedPatterns
 
 let readLexems lexbuf =
     let rec readLexemsInternal state = function
@@ -22,37 +24,14 @@ let readLexems1 single lexbuf =
     
     readLexemsInternal [] (DsLex.lex single lexbuf) |> List.rev
 
-type q = 
- |A
- |B
+let visitQuote q =
+    match q with
+        | Call(exprOpt, mi, exprList) -> printf "call" 
 
 [<EntryPoint>]
 let main argv = 
-//    let stringFormula = "for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2"
-//    let lexBuf = LexBuffer<char>.FromString stringFormula
-//    let lexems = readLexems1 false lexBuf
-//    let ast1 = (DsLex.lex false, lexBuf) ||> DsParser.start
-      
-//    let stringFormula = "(4 + \sum{1+2!, 3!+4}) + 5"
-//    let stringFormula = "1*2+3*4!/3"
-//    let stringFormula = "1!+2+1"
-//    let stringFormula = "1+5*4"
-//    let stringFormula = "1*2+3*4"
-//    let stringFormula = "{1}^{{2}^{3}}"
-//    let stringFormula = "1*2+5* {\\frac{\int_{[||for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2||]}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}}^{3!} * 5"
-//    let stringFormula = "[|for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2|]"
-//    let stringFormula = "\\frac{\int_{0}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}"
-//    let stringFormula = "2+3/4"
-//    let stringFormula = "1*2+\sum_{i}^{N}{N*\\text{[||for human select voice_freq where name=\"Lex\" and gender=1 or name=\"Parse\" and gender = 2||]}, 2, 5*2}"
-//    let stringFormula = "1+2"
-    let stringFormula = "\int_{0}^{\pi/2}{\sin{x}} d{x}"
+    let stringFormula = "\int_{0}^{\pi/2}{4! * \sin{x}} d{x}"
     let lexBuf = LexBuffer<char>.FromString stringFormula
-//    let lexems = readLexems  lexBuf 
-//    let par = Expression.Parameter(typeof<int>, "x")
-//    let lam = Expression.Lambda<System.Func<int, int>>(
-//        Expression.Add(par, Expression.Constant(2)), par).Compile()
-//    let w = lam.Invoke(5)
-//    let res = MathNet.Numerics.Integrate.OnClosedInterval((fun x -> x), 5., 1.)
     let ast = (DsParserExtensions.parse, lexBuf) ||> TexParser.parse
     let res = TexInterpreter(DomainSpecificInterpreter.evalSValue, DomainSpecificInterpreter.evalMValue).Eval ast
     printfn "%A" ast

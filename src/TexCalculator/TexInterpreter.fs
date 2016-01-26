@@ -5,6 +5,7 @@ open TexAst
 open MathNet.Numerics
 open System.Linq.Expressions
 open ExpressionBuilder
+open MathFunctions
 
 type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> float list)=
     let interpretSValue = interpretSValue
@@ -21,6 +22,7 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
             | Sin(f, p) -> Math.Pow(Math.Sin(execute f), execute p)
             | Cos(f, p) -> Math.Pow(Math.Cos(execute f), execute p)
             | Int(x) -> float(x)
+            | Fact(x) -> fact(execute x)
             | Float(x) -> x
             | Constant(Pi) -> Math.PI
             | Constant(E) -> Math.E
@@ -70,7 +72,13 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
             | Sin(f, p) -> 
                 buildSin (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
             | Cos(f, p) -> 
+                let v1, v2 = extractExpressionValues lamParameter f p
+                let par = <@1.@>
+                ExpressionBuilder.buildExpression <@ Math.Pow(Math.Sin(%par), 2. ) @>
                 buildCos (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
+            | Fact(x) -> 
+                let xVal = execute x
+                ExpressionBuilder.buildExpression <@ MathFunctions.fact xVal @>
             | expr -> Expression.Constant(execute expr) :> Expression
 
     member this.Eval ast = execute ast
