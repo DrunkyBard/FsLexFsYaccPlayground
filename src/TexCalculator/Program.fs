@@ -9,6 +9,8 @@ open ParserExtensions
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Quotations.DerivedPatterns
+open FSharp.Quotations.Evaluator
+
 
 let readLexems lexbuf =
     let rec readLexemsInternal state = function
@@ -30,6 +32,20 @@ let visitQuote q =
 
 [<EntryPoint>]
 let main argv = 
+//    let lamParam = Quotations.Var("AAA", typeof<float>) |> Quotations.Expr.Var :?> Quotations.Expr<float>
+//    let xParamName = "x"
+//    let varX = Quotations.Var("xParam", typeof<int>)
+//    let varXExpr = Expr.Cast<int>(Quotations.Expr.Var(varX))
+//    let lamBody = <@ %varXExpr + 1 @>
+//    let lam = Expr.Cast<int -> int>(Expr.Lambda(varX, lamBody))
+//    let compiledLam = QuotationEvaluator.Evaluate lam
+//    Expr.Lambda(varX, )
+    
+    
+//
+//    match lam with
+//        | Lambda(param, body) -> printf "abc"
+
     let stringFormula = "\int_{0}^{\pi/2}{4! * \sin{x}} d{x}"
     let lexBuf = LexBuffer<char>.FromString stringFormula
     let ast = (DsParserExtensions.parse, lexBuf) ||> TexParser.parse

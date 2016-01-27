@@ -6,6 +6,8 @@ open MathNet.Numerics
 open System.Linq.Expressions
 open ExpressionBuilder
 open MathFunctions
+open FSharp.Quotations.Evaluator
+open QuotationExtensions
 
 type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> float list)=
     let interpretSValue = interpretSValue
@@ -32,6 +34,12 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
                 let expr = buildExpression diffParameter func
                 let lam = Expression.Lambda<Func<float, float>>(expr, diffParameter)
                 let lamFunc = lam.Compile()
+
+                let lamParam = Quotations.Var(diffVar, typeof<float>)
+                let lambda = Quotations.Expr.Cast<float -> float>(Quotations.Expr.Lambda(lamParam, buildQuotExpression lamParam func))
+                let compiledQuot =  QuotationEvaluator.Evaluate lambda
+                let res = Integrate.OnClosedInterval((fun x -> compiledQuot x), execute(lowBE), execute(uppBE))
+
                 Integrate.OnClosedInterval(lamFunc, execute(lowBE), execute(uppBE))
             | DsAst(SRefValue(dsAst)) -> interpretSValue dsAst
             | Sum(exprs) -> expand exprs [] |> List.fold (fun s i -> s + i) 0.
@@ -49,6 +57,24 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
         let e1 = buildExpression lamParameter ast1
         let e2 = buildExpression lamParameter ast2
         (e1, e2)
+
+    and buildQuotExpression (lamParameter: Quotations.Var) (expr: Expr) : Quotations.Expr<float> = 
+        match expr with
+            | Plus(e1, e2)            -> <@ %(buildQuotExpression lamParameter e1) + %(buildQuotExpression lamParameter e2) @>
+            | Sub(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) - %(buildQuotExpression lamParameter e2) @>
+            | Mul(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) * %(buildQuotExpression lamParameter e2) @>
+            | Div(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) / %(buildQuotExpression lamParameter e2) @>
+            | Pow(e1, e2)             -> <@ Math.Pow(%(buildQuotExpression lamParameter e1), %(buildQuotExpression lamParameter e2)) @>
+            | Sin(f, p)               -> <@ Math.Pow(Math.Sin(%(buildQuotExpression lamParameter f)), %(buildQuotExpression lamParameter p))  @>
+            | Cos(f, p)               -> <@ Math.Pow(Math.Cos(%(buildQuotExpression lamParameter f)), %(buildQuotExpression lamParameter p))  @>
+            | Fact(x)                 -> <@ %(buildQuotExpression lamParameter x) |> MathFunctions.fact @>
+            | Int(x)                  -> <@ float(x) @>
+            | Float(x)                -> <@ x @>
+            | DsAst(SRefValue(dsAst)) -> <@ interpretSValue dsAst @>
+            | Var(x) -> 
+                if x <> lamParameter.Name then failwithf "Incorrect parameter. Expected: '%s'. Actual: '%s'" lamParameter.Name x
+                else Quotations.Expr.Var<float>(lamParameter)
+            | expr -> <@ 1. @>
     
     and buildExpression lamParameter expr : Expression = 
         match expr with
@@ -72,9 +98,6 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
             | Sin(f, p) -> 
                 buildSin (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
             | Cos(f, p) -> 
-                let v1, v2 = extractExpressionValues lamParameter f p
-                let par = <@1.@>
-                ExpressionBuilder.buildExpression <@ Math.Pow(Math.Sin(%par), 2. ) @>
                 buildCos (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
             | Fact(x) -> 
                 let xVal = execute x
