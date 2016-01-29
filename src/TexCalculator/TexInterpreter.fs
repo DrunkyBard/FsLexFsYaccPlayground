@@ -3,8 +3,6 @@
 open System
 open TexAst
 open MathNet.Numerics
-open System.Linq.Expressions
-open ExpressionBuilder
 open MathFunctions
 open FSharp.Quotations.Evaluator
 open QuotationExtensions
@@ -13,96 +11,53 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
     let interpretSValue = interpretSValue
     let interpretMValue = interpretMValue
 
-    let rec execute (ast: TexAst.Expr)  : float = 
+    let rec execute (ast: TexAst.Expr) (funcArguments: Quotations.Var list) : Quotations.Expr<float> =
         match ast with
-            | Plus(e1, e2) -> execute(e1) + execute(e2)
-            | Mul (e1, e2) -> execute(e1) * execute(e2)
-            | Sub (e1, e2) -> execute(e1) - execute(e2)
-            | Div (e1, e2) -> execute(e1) / execute(e2)
-            | Pow (e1, e2) -> Math.Pow(execute(e1), execute(e2))
-            | Sqrt (e, powE) -> Math.Pow(execute(e), 1./execute(powE))
-            | Sin(f, p) -> Math.Pow(Math.Sin(execute f), execute p)
-            | Cos(f, p) -> Math.Pow(Math.Cos(execute f), execute p)
-            | Int(x) -> float(x)
-            | Fact(x) -> fact(execute x)
-            | Float(x) -> x
-            | Constant(Pi) -> Math.PI
-            | Constant(E) -> Math.E
-            | Neg(e) -> -1. * execute(e)
+            | Plus(e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 + %expr2 @>
+            | Mul (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 * %expr2 @>
+            | Sub (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 - %expr2 @>
+            | Div (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 / %expr2 @>
+            | Pow (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ Math.Pow(%expr1, %expr2) @>
+            | Sqrt (e, powE) -> let expr1, expr2 = flattenBinaryExpression e powE funcArguments in <@ Math.Pow(%expr1, 1./(%expr2)) @>
+            | Sin(f, p) -> let expr1, expr2 = flattenBinaryExpression f p funcArguments in <@ Math.Pow(Math.Sin(%expr1), 1./(%expr2)) @>
+            | Cos(f, p) -> let expr1, expr2 = flattenBinaryExpression f p funcArguments in <@ Math.Pow(Math.Cos(%expr1), 1./(%expr2)) @>
+            | Int(x) -> let floatX = float(x) in <@ floatX @>
+            | Float(x) -> <@ x @>
+            | Fact(x) -> let expr = execute x funcArguments in <@ MathFunctions.fact(%expr) @>
+            | Constant(Pi) -> <@ Math.PI @>
+            | Constant(E) -> <@ Math.E @>
+            | Neg(e) -> let expr = execute e funcArguments in <@ -1. * %expr @>
+            | DsAst(SRefValue(dsAst)) -> let sValue = interpretSValue dsAst in <@ sValue @>
+            | Sum(exprs) ->  let exprList = expand exprs funcArguments [] in <@ Array.fold (fun s i -> s + i) 0. %exprList @>
+            | Prod(exprs) -> let exprList = expand exprs funcArguments [] in <@ Array.fold (fun s i -> s * i) 1. %exprList @>
+            | Var(varName) -> 
+                match List.tryFind (fun (arg: Quotations.Var) -> arg.Name = varName) funcArguments with
+                    | Some(arg) -> <@ %Quotations.Expr.Var<float>(arg) @>
+                    | None -> failwithf "Parameter \'%s\' is not defined" varName
             | Integral(func, diffVar, lowBE, uppBE) -> 
-                let diffParameter = Expression.Parameter(typeof<float>, diffVar)
-                let expr = buildExpression diffParameter func
-                let lam = Expression.Lambda<Func<float, float>>(expr, diffParameter)
-                let lamFunc = lam.Compile()
-
                 let lamParam = Quotations.Var(diffVar, typeof<float>)
-                let lambda = Quotations.Expr.Cast<float -> float>(Quotations.Expr.Lambda(lamParam, buildQuotExpression lamParam func))
+                let intExpr = execute func (lamParam::funcArguments)
+                let lambda = Quotations.Expr.Cast<float -> float>(Quotations.Expr.Lambda(lamParam, intExpr))
                 let compiledQuot =  QuotationEvaluator.Evaluate lambda
-                let res = Integrate.OnClosedInterval((fun x -> compiledQuot x), execute(lowBE), execute(uppBE))
-
-                Integrate.OnClosedInterval(lamFunc, execute(lowBE), execute(uppBE))
-            | DsAst(SRefValue(dsAst)) -> interpretSValue dsAst
-            | Sum(exprs) -> expand exprs [] |> List.fold (fun s i -> s + i) 0.
-            | Prod(exprs) -> expand exprs [] |>  List.fold (fun s i -> s * i) 1.
+                let lowBEExpression = execute lowBE funcArguments
+                let uppBEExpression = execute uppBE funcArguments
+                <@ Integrate.OnClosedInterval((fun x -> compiledQuot x), %lowBEExpression, %uppBEExpression) @>
             | any -> failwithf "Cannot evaluate next AST: \r\n %A" any
-    
-    and expand exprs state =
-        match exprs with
-            | [] -> List.rev state
-            | DsAst(SRefValue(dsAst))::t -> expand t (interpretSValue dsAst::state)
-            | DsAst(MRefValue(dsAst))::t -> List.fold (fun s ast -> interpretMValue ast @ s) state dsAst |> expand t
-            | any::t -> expand t ((execute any)::state)
-                
-    and extractExpressionValues lamParameter ast1 ast2 = 
-        let e1 = buildExpression lamParameter ast1
-        let e2 = buildExpression lamParameter ast2
+
+    and flattenBinaryExpression e1 e2 funcArguments = 
+        let e1 = execute e1 funcArguments
+        let e2 = execute e2 funcArguments
         (e1, e2)
 
-    and buildQuotExpression (lamParameter: Quotations.Var) (expr: Expr) : Quotations.Expr<float> = 
-        match expr with
-            | Plus(e1, e2)            -> <@ %(buildQuotExpression lamParameter e1) + %(buildQuotExpression lamParameter e2) @>
-            | Sub(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) - %(buildQuotExpression lamParameter e2) @>
-            | Mul(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) * %(buildQuotExpression lamParameter e2) @>
-            | Div(e1, e2)             -> <@ %(buildQuotExpression lamParameter e1) / %(buildQuotExpression lamParameter e2) @>
-            | Pow(e1, e2)             -> <@ Math.Pow(%(buildQuotExpression lamParameter e1), %(buildQuotExpression lamParameter e2)) @>
-            | Sin(f, p)               -> <@ Math.Pow(Math.Sin(%(buildQuotExpression lamParameter f)), %(buildQuotExpression lamParameter p))  @>
-            | Cos(f, p)               -> <@ Math.Pow(Math.Cos(%(buildQuotExpression lamParameter f)), %(buildQuotExpression lamParameter p))  @>
-            | Fact(x)                 -> <@ %(buildQuotExpression lamParameter x) |> MathFunctions.fact @>
-            | Int(x)                  -> <@ float(x) @>
-            | Float(x)                -> <@ x @>
-            | DsAst(SRefValue(dsAst)) -> <@ interpretSValue dsAst @>
-            | Var(x) -> 
-                if x <> lamParameter.Name then failwithf "Incorrect parameter. Expected: '%s'. Actual: '%s'" lamParameter.Name x
-                else Quotations.Expr.Var<float>(lamParameter)
-            | expr -> <@ 1. @>
-    
-    and buildExpression lamParameter expr : Expression = 
-        match expr with
-            | Plus(e1, e2) -> 
-                let v1, v2 = extractExpressionValues lamParameter e1 e2
-                Expression.Add(v1, v2) :> Expression
-            | Sub(e1, e2) -> 
-                let v1, v2 = extractExpressionValues lamParameter e1 e2
-                Expression.Subtract(v1, v2) :> Expression
-            | Mul(e1, e2) -> 
-                let v1, v2 = extractExpressionValues lamParameter e1 e2
-                Expression.Multiply(v1, v2) :> Expression
-            | Div(e1, e2) -> 
-                let v1, v2 = extractExpressionValues lamParameter e1 e2
-                Expression.Divide(v1, v2) :> Expression
-            | Var(x) -> 
-                if x <> lamParameter.Name then failwithf "Incorrect parameter. Expected: '%s'. Actual: '%s'" lamParameter.Name x
-                else lamParameter :> Expression
-            | Pow(e1, e2) -> 
-                buildPower (buildExpression lamParameter e1) (buildExpression lamParameter e2) :> Expression
-            | Sin(f, p) -> 
-                buildSin (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
-            | Cos(f, p) -> 
-                buildCos (buildExpression lamParameter f) |> buildPower <| buildExpression lamParameter p :> Expression
-            | Fact(x) -> 
-                let xVal = execute x
-                ExpressionBuilder.buildExpression <@ MathFunctions.fact xVal @>
-            | expr -> Expression.Constant(execute expr) :> Expression
+    and expand exprs funcArguments state =
+        match exprs with
+            | [] -> let revState = List.rev state in Quotations.Expr.Cast<float array>(Quotations.Expr.NewArray(typeof<float>, revState))
+            | DsAst(MRefValue(dsAst))::t -> 
+                List.collect (fun dAst -> interpretMValue dAst) dsAst
+                |> List.map (fun value -> <@ value @> :> Quotations.Expr)
+                |> List.append state
+                |> expand t funcArguments
+            | h::t -> expand t funcArguments ((execute h funcArguments :> Quotations.Expr)::state)
 
-    member this.Eval ast = execute ast
+    member this.Eval ast = execute ast [] |> QuotationEvaluator.Evaluate
     

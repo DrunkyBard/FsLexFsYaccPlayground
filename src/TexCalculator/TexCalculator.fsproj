@@ -81,7 +81,6 @@
     <Compile Include="DomainSpecific\DsParserExtensions.fs" />
     <Compile Include="DomainSpecific\DomainSpecificInterpreter.fs" />
     <Compile Include="MathFunctions.fs" />
-    <Compile Include="ExpressionBuilder.fs" />
     <Compile Include="QuotationExtensions.fs" />
     <Compile Include="TexInterpreter.fs" />
     <Compile Include="Program.fs" />

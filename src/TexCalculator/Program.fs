@@ -45,8 +45,15 @@ let main argv =
 //
 //    match lam with
 //        | Lambda(param, body) -> printf "abc"
-
-    let stringFormula = "\int_{0}^{\pi/2}{4! * \sin{x}} d{x}"
+    let q1 = <@ 2.0 @>
+    let q2 = <@ 3.0 @>
+    let q3 = <@ 4.0 @>
+    
+    let stringFormula = "\int_{0}^{\pi/2}{[|for A with Id = \"A2\" select IntProp|] * \sin{x}} d{x}"
+    let stringFormula = "1*2+5* {\\frac{\int_{[|for A with Id = \"A2\" select IntProp|]}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}}^{3!} * 5"
+    let stringFormula = "5*\sum{[||for A select IntProp where Id < \"Z\"||]}"
+    let lexbuf = LexBuffer<char>.FromString stringFormula
+    let lexems = readLexems lexbuf
     let lexBuf = LexBuffer<char>.FromString stringFormula
     let ast = (DsParserExtensions.parse, lexBuf) ||> TexParser.parse
     let res = TexInterpreter(DomainSpecificInterpreter.evalSValue, DomainSpecificInterpreter.evalMValue).Eval ast

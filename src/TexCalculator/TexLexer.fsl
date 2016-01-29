@@ -40,10 +40,10 @@ let limit = "lim"
 let text = "text"
 
 let digit = ['0' - '9']
-let frac = '.' digit*
+let fraction = '.' digit*
 let char = ['a'-'z' 'A'-'Z'] 
 let int = digit+
-let float = digit* frac?
+let float = digit* fraction?
 let identifier  = char(char|digit)*
 let ignore = ' ' | '\t' | "\\," | "\\mathrm"
 
