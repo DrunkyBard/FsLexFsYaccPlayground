@@ -32,23 +32,6 @@ let visitQuote q =
 
 [<EntryPoint>]
 let main argv = 
-//    let lamParam = Quotations.Var("AAA", typeof<float>) |> Quotations.Expr.Var :?> Quotations.Expr<float>
-//    let xParamName = "x"
-//    let varX = Quotations.Var("xParam", typeof<int>)
-//    let varXExpr = Expr.Cast<int>(Quotations.Expr.Var(varX))
-//    let lamBody = <@ %varXExpr + 1 @>
-//    let lam = Expr.Cast<int -> int>(Expr.Lambda(varX, lamBody))
-//    let compiledLam = QuotationEvaluator.Evaluate lam
-//    Expr.Lambda(varX, )
-    
-    
-//
-//    match lam with
-//        | Lambda(param, body) -> printf "abc"
-    let q1 = <@ 2.0 @>
-    let q2 = <@ 3.0 @>
-    let q3 = <@ 4.0 @>
-    
     let stringFormula = "\int_{0}^{\pi/2}{[|for A with Id = \"A2\" select IntProp|] * \sin{x}} d{x}"
     let stringFormula = "1*2+5* {\\frac{\int_{[|for A with Id = \"A2\" select IntProp|]}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}}^{3!} * 5"
     let stringFormula = "5*\sum{[||for A select IntProp where Id < \"Z\"||]}"

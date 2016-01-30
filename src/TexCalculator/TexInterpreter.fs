@@ -17,6 +17,7 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
             | Mul (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 * %expr2 @>
             | Sub (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 - %expr2 @>
             | Div (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 / %expr2 @>
+            | Bmod (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ %expr1 % %expr2 @>
             | Pow (e1, e2) -> let expr1, expr2 = flattenBinaryExpression e1 e2 funcArguments in <@ Math.Pow(%expr1, %expr2) @>
             | Sqrt (e, powE) -> let expr1, expr2 = flattenBinaryExpression e powE funcArguments in <@ Math.Pow(%expr1, 1./(%expr2)) @>
             | Sin(f, p) -> let expr1, expr2 = flattenBinaryExpression f p funcArguments in <@ Math.Pow(Math.Sin(%expr1), 1./(%expr2)) @>

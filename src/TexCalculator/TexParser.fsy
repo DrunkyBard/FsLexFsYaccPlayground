@@ -1,5 +1,6 @@
 ﻿%{
 open TexAst
+open System
 open Microsoft.FSharp.Text.Lexing
 
 let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificToken -> obj>
@@ -99,13 +100,15 @@ lowPriorityBinaryOperator:
     | SUB   { SUB }
 
 mediumPriorityBinaryOperator:
-    | MUL         { MUL }
-	| SLASH TIMES { MUL }
-    | DIV         { DIV }
+    | MUL         { MUL  }
+	| SLASH TIMES { MUL  }
+    | DIV         { DIV  }
+	| BMOD        { BMOD }
 
 highPriorityFunction:
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }
+    | SLASH INFTY                { Float(Double.PositiveInfinity) }
     | LPAREN expression RPAREN   { $2 }
 	| trigonometry               { $1 }
 	| sum                        { $1 }
@@ -125,12 +128,14 @@ mediumPriorityBinaryExpression:
                                                               match $2 with
                                                                   | MUL -> Mul($1, $3)
                                                                   | DIV -> Div($1, $3)
+                                                                  | BMOD -> Bmod($1, $3)
                                                           }
     | mediumPriorityBinaryExpression mediumPriorityBinaryOperator highPriorityFunction  
                                                           { 
                                                               match $2 with
                                                                   | MUL -> Mul($1, $3)
                                                                   | DIV -> Div($1, $3)
+                                                                  | BMOD -> Bmod($1, $3)
                                                           }
 
 lowPriorityBinaryExpression:

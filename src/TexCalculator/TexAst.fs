@@ -19,6 +19,7 @@ type Expr =
     | Sub of Expr * Expr
     | Mul of Expr * Expr
     | Div of Expr * Expr
+    | Bmod of Expr * Expr
     | Sum of Expr list  
     | Prod of Expr list 
     | Sqrt of Expr * Expr // func * power
