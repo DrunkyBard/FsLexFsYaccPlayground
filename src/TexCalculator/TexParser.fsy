@@ -75,8 +75,11 @@ power:
     LCURLY expression RCURLY CARET LCURLY expression RCURLY  { Pow($2, $6) }
 
 integral:
-    SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression RCURLY DIFF 
+    | SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression RCURLY DIFF 
                                                                                                     { Integral($12, $14, $5, $9) }
+																									
+    | SLASH INTEGRAL UNDERSCORE LCURLY expression RCURLY CARET LCURLY expression RCURLY LCURLY expression DIFF RCURLY  
+                                                                                                    { Integral($12, $13, $5, $9) }
 
 limit:
     SLASH LIM UNDERSCORE LCURLY ID TO expression RCURLY LCURLY expression RCURLY  { Lim($10, $5, $7) }
