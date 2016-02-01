@@ -100,16 +100,6 @@ refValue:
     | SREFVAL      { analyzeDomainSpecificSingleSource (fst $1) (snd $1) |> DsAst }
 	| MREFVAL      { analyzeDomainSpecificSources $1 |> DsAst }
 
-lowPriorityBinaryOperator:
-    | PLUS  { PLUS }
-    | SUB   { SUB }
-
-mediumPriorityBinaryOperator:
-    | MUL         { MUL  }
-	| SLASH TIMES { MUL  }
-    | DIV         { DIV  }
-	| BMOD        { BMOD }
-
 highPriorityFunction:
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }

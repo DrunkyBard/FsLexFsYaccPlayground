@@ -103,8 +103,6 @@ type nonTerminalId =
     | NONTERM_refPattern
     | NONTERM_trigonometry
     | NONTERM_refValue
-    | NONTERM_lowPriorityBinaryOperator
-    | NONTERM_mediumPriorityBinaryOperator
     | NONTERM_highPriorityFunction
     | NONTERM_binaryExpression
     | NONTERM_argumentSet
