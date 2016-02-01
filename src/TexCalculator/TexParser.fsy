@@ -41,6 +41,9 @@ let analyzeDomainSpecificSources sources =
 %token PI EULERNUM
 %token EOF
 
+%left PLUS SUB 
+%left DIV MUL
+
 %start start
 %type <TexAst.Expr> start
 
@@ -51,9 +54,8 @@ start:
 	expression EOF { $1 }
 
 expression:
-    | lowPriorityBinaryExpression    { $1 }
-    | mediumPriorityBinaryExpression { $1 }
-	| highPriorityFunction           { $1 }
+    | binaryExpression      { $1 }
+	| highPriorityFunction  { $1 }
 
 constant:
 	| PI       { Constant(Pi) }
@@ -125,48 +127,12 @@ highPriorityFunction:
 	| refPattern                 { $1 }
 	| ID                         { Var($1) }
 
-mediumPriorityBinaryExpression:
-    | highPriorityFunction mediumPriorityBinaryOperator highPriorityFunction  
-                                                          { 
-                                                              match $2 with
-                                                                  | MUL -> Mul($1, $3)
-                                                                  | DIV -> Div($1, $3)
-                                                                  | BMOD -> Bmod($1, $3)
-                                                          }
-    | mediumPriorityBinaryExpression mediumPriorityBinaryOperator highPriorityFunction  
-                                                          { 
-                                                              match $2 with
-                                                                  | MUL -> Mul($1, $3)
-                                                                  | DIV -> Div($1, $3)
-                                                                  | BMOD -> Bmod($1, $3)
-                                                          }
-
-lowPriorityBinaryExpression:
-    | expression lowPriorityBinaryOperator expression     { 
-                                                            match $2 with
-                                                               | PLUS -> Plus($1, $3)
-                                                               | SUB -> Sub($1, $3)
-                                                          }
+binaryExpression:
+    | expression PLUS expression { Plus($1, $3) }
+    | expression SUB expression { Sub($1, $3) }
+    | expression MUL expression { Mul($1, $3) }
+    | expression DIV expression { Div($1, $3) }
 
 argumentSet:
     | expression  { [$1] }
 	| argumentSet COMMA expression { $3::$1 }
-
-
-
-
-
-// ---------------DRAFT------------------
-//plus:
-//    | expression PLUS INT         { Plus($1, Int($3)) }
-//    | INT PLUS expression         { Plus(Int($1), $3) }
-//    | expression PLUS expression  { Plus($1, $3) }
-//	
-//sub:
-//    | expression SUB expression   { Sub($1, $3) }
-//						    
-//mul:					    
-//    | expression MUL INT { Mul($1, Int($3)) }
-//						    
-//div:					    
-//    | expression DIV expression   { Div($1, $3) }

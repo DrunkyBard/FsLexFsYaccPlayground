@@ -106,8 +106,7 @@ type nonTerminalId =
     | NONTERM_lowPriorityBinaryOperator
     | NONTERM_mediumPriorityBinaryOperator
     | NONTERM_highPriorityFunction
-    | NONTERM_mediumPriorityBinaryExpression
-    | NONTERM_lowPriorityBinaryExpression
+    | NONTERM_binaryExpression
     | NONTERM_argumentSet
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
