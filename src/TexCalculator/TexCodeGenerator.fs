@@ -1,13 +1,12 @@
-﻿module TexInterpreter
+﻿module CodeGeneration
 
 open System
 open TexAst
 open MathNet.Numerics
-open MathFunctions
 open FSharp.Quotations.Evaluator
 open QuotationExtensions
 
-type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> float list)=
+type TexCodeGenerator (interpretSValue: obj -> float, interpretMValue: obj -> float list)=
     let interpretSValue = interpretSValue
     let interpretMValue = interpretMValue
 
@@ -60,5 +59,5 @@ type TexInterpreter (interpretSValue: obj -> float, interpretMValue: obj -> floa
                 |> expand t funcArguments
             | h::t -> expand t funcArguments ((execute h funcArguments :> Quotations.Expr)::state)
 
-    member this.Eval ast = execute ast [] |> QuotationEvaluator.Evaluate
+    member this.Generate ast = execute ast []
     

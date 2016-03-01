@@ -6,7 +6,7 @@ type Constant =
     | Pi
     | E
 
-type DomainSpecificToken = 
+type DomainSpecificContext = 
     | SRefValueSrc of string
     | MRefValueSrc of string
 
@@ -37,7 +37,7 @@ type Expr =
     | Neg of Expr
 
 type DomainSpecificAnalyzer = 
-    abstract member Analyze: DomainSpecificToken -> DomainSpecificAst 
+    abstract member Analyze: DomainSpecificContext -> DomainSpecificAst 
 
 type SpecAnalyzer() = 
     interface DomainSpecificAnalyzer with

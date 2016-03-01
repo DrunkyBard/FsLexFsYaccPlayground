@@ -6,13 +6,12 @@ open Microsoft.FSharp.Text.Lexing
 open DsParser
 
 let lexeme = LexBuffer<_>.LexemeString
-let singleStatements = ["with"]
 
 let checkStatement single strLexem token (lexbuf: LexBuffer<_>) = 
-    match single, List.tryFind(fun s -> s = strLexem) singleStatements with
-      | (true, Some(_)) | (false, None) -> token
-      | (true, None) -> failwithf "Unexpected keyword %A for single query statement at pos: %u" strLexem lexbuf.StartPos.Column
-      | (false, Some(_)) -> failwithf "Unexpected keyword %A for many query statement at pos: %u" strLexem lexbuf.StartPos.Column
+    match single, token with
+      | (true, WITH) | (false, WHERE) -> token
+      | (true, _) -> failwithf "Unexpected keyword %A for single query statement at pos: %u" strLexem lexbuf.StartPos.Column
+      | (false, _) -> failwithf "Unexpected keyword %A for multi query statement at pos: %u" strLexem lexbuf.StartPos.Column
 }
 
 let select = "select"

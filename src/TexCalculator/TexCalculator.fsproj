@@ -68,7 +68,6 @@
     <Compile Include="TexAst.fs" />
     <Compile Include="TexParser.fs" />
     <Compile Include="TexLexer.fs" />
-    <Compile Include="ParserExtensions.fs" />
     <FsYacc Include="DomainSpecific\DsParser.fsy">
       <OtherFlags>-o DomainSpecific\DsParser.fs -v --module DsParser</OtherFlags>
     </FsYacc>
@@ -82,7 +81,8 @@
     <Compile Include="DomainSpecific\DomainSpecificInterpreter.fs" />
     <Compile Include="MathFunctions.fs" />
     <Compile Include="QuotationExtensions.fs" />
-    <Compile Include="TexInterpreter.fs" />
+    <Compile Include="TexCodeGenerator.fs" />
+    <Compile Include="TexCompiler.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

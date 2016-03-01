@@ -2,8 +2,9 @@
 open TexAst
 open System
 open Microsoft.FSharp.Text.Lexing
+open Microsoft.FSharp.Text.Parsing
 
-let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificToken -> obj>
+let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificContext -> obj>
 
 let analyzeDomainSpecificLanguage token = domainSpecificAnalyzer token
 
@@ -12,6 +13,9 @@ let analyzeDomainSpecificSource token startPos =
       analyzeDomainSpecificLanguage token
     with
       | DomainSpecificParseException(fString, pos) -> failwithf "%s at pos: %u" fString (startPos)
+
+let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) -> 
+   System.Console.WriteLine("A"))
 
 let analyzeDomainSpecificSingleSource src pos = 
     analyzeDomainSpecificSource (SRefValueSrc(src)) pos |> SRefValue
@@ -51,7 +55,8 @@ let analyzeDomainSpecificSources sources =
 %%
 
 start:
-	expression EOF { $1 }
+	| expression EOF { $1 }
+	| error {failwithf ""}
 
 expression:
     | binaryExpression      { $1 }

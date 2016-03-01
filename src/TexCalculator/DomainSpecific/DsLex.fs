@@ -7,15 +7,14 @@ open Microsoft.FSharp.Text.Lexing
 open DsParser
 
 let lexeme = LexBuffer<_>.LexemeString
-let singleStatements = ["with"]
 
 let checkStatement single strLexem token (lexbuf: LexBuffer<_>) = 
-    match single, List.tryFind(fun s -> s = strLexem) singleStatements with
-      | (true, Some(_)) | (false, None) -> token
-      | (true, None) -> failwithf "Unexpected keyword %A for single query statement at pos: %u" strLexem lexbuf.StartPos.Column
-      | (false, Some(_)) -> failwithf "Unexpected keyword %A for many query statement at pos: %u" strLexem lexbuf.StartPos.Column
+    match single, token with
+      | (true, WITH) | (false, WHERE) -> token
+      | (true, _) -> failwithf "Unexpected keyword %A for single query statement at pos: %u" strLexem lexbuf.StartPos.Column
+      | (false, _) -> failwithf "Unexpected keyword %A for multi query statement at pos: %u" strLexem lexbuf.StartPos.Column
 
-# 18 "DomainSpecific\DsLex.fs"
+# 17 "DomainSpecific\DsLex.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -110,108 +109,108 @@ and lexString s (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_le
 and _fslex_lex single _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 39 "DomainSpecific\DsLex.fsl"
+# 38 "DomainSpecific\DsLex.fsl"
                              lex single lexbuf 
-# 115 "DomainSpecific\DsLex.fs"
+# 114 "DomainSpecific\DsLex.fs"
           )
   | 1 -> ( 
-# 40 "DomainSpecific\DsLex.fsl"
+# 39 "DomainSpecific\DsLex.fsl"
                              SELECT 
-# 120 "DomainSpecific\DsLex.fs"
+# 119 "DomainSpecific\DsLex.fs"
           )
   | 2 -> ( 
-# 41 "DomainSpecific\DsLex.fsl"
+# 40 "DomainSpecific\DsLex.fsl"
                              FOR 
-# 125 "DomainSpecific\DsLex.fs"
+# 124 "DomainSpecific\DsLex.fs"
           )
   | 3 -> ( 
-# 42 "DomainSpecific\DsLex.fsl"
+# 41 "DomainSpecific\DsLex.fsl"
                              checkStatement single (lexeme lexbuf) WITH lexbuf 
-# 130 "DomainSpecific\DsLex.fs"
+# 129 "DomainSpecific\DsLex.fs"
           )
   | 4 -> ( 
-# 43 "DomainSpecific\DsLex.fsl"
+# 42 "DomainSpecific\DsLex.fsl"
                              checkStatement single (lexeme lexbuf) WHERE lexbuf 
-# 135 "DomainSpecific\DsLex.fs"
+# 134 "DomainSpecific\DsLex.fs"
           )
   | 5 -> ( 
-# 44 "DomainSpecific\DsLex.fsl"
+# 43 "DomainSpecific\DsLex.fsl"
                                     AND 
-# 140 "DomainSpecific\DsLex.fs"
+# 139 "DomainSpecific\DsLex.fs"
           )
   | 6 -> ( 
-# 45 "DomainSpecific\DsLex.fsl"
+# 44 "DomainSpecific\DsLex.fsl"
                              OR 
-# 145 "DomainSpecific\DsLex.fs"
+# 144 "DomainSpecific\DsLex.fs"
           )
   | 7 -> ( 
-# 46 "DomainSpecific\DsLex.fsl"
+# 45 "DomainSpecific\DsLex.fsl"
                              LE 
-# 150 "DomainSpecific\DsLex.fs"
+# 149 "DomainSpecific\DsLex.fs"
           )
   | 8 -> ( 
-# 47 "DomainSpecific\DsLex.fsl"
+# 46 "DomainSpecific\DsLex.fsl"
                              LT 
-# 155 "DomainSpecific\DsLex.fs"
+# 154 "DomainSpecific\DsLex.fs"
           )
   | 9 -> ( 
-# 48 "DomainSpecific\DsLex.fsl"
+# 47 "DomainSpecific\DsLex.fsl"
                              GE 
-# 160 "DomainSpecific\DsLex.fs"
+# 159 "DomainSpecific\DsLex.fs"
           )
   | 10 -> ( 
-# 49 "DomainSpecific\DsLex.fsl"
+# 48 "DomainSpecific\DsLex.fsl"
                              GT 
-# 165 "DomainSpecific\DsLex.fs"
+# 164 "DomainSpecific\DsLex.fs"
           )
   | 11 -> ( 
-# 50 "DomainSpecific\DsLex.fsl"
+# 49 "DomainSpecific\DsLex.fsl"
                              EQ 
-# 170 "DomainSpecific\DsLex.fs"
+# 169 "DomainSpecific\DsLex.fs"
           )
   | 12 -> ( 
-# 51 "DomainSpecific\DsLex.fsl"
+# 50 "DomainSpecific\DsLex.fsl"
                              NEQ 
-# 175 "DomainSpecific\DsLex.fs"
+# 174 "DomainSpecific\DsLex.fs"
           )
   | 13 -> ( 
-# 52 "DomainSpecific\DsLex.fsl"
+# 51 "DomainSpecific\DsLex.fsl"
                              INT(int (lexeme lexbuf)) 
-# 180 "DomainSpecific\DsLex.fs"
+# 179 "DomainSpecific\DsLex.fs"
           )
   | 14 -> ( 
-# 53 "DomainSpecific\DsLex.fsl"
+# 52 "DomainSpecific\DsLex.fsl"
                                 ID(lexeme lexbuf) 
-# 185 "DomainSpecific\DsLex.fs"
+# 184 "DomainSpecific\DsLex.fs"
           )
   | 15 -> ( 
-# 54 "DomainSpecific\DsLex.fsl"
+# 53 "DomainSpecific\DsLex.fsl"
                              lexString (new StringBuilder()) lexbuf 
-# 190 "DomainSpecific\DsLex.fs"
+# 189 "DomainSpecific\DsLex.fs"
           )
   | 16 -> ( 
-# 55 "DomainSpecific\DsLex.fsl"
+# 54 "DomainSpecific\DsLex.fsl"
                              EOF 
-# 195 "DomainSpecific\DsLex.fs"
+# 194 "DomainSpecific\DsLex.fs"
           )
   | 17 -> ( 
-# 56 "DomainSpecific\DsLex.fsl"
+# 55 "DomainSpecific\DsLex.fsl"
                              failwithf "Unrecognized input at pos: '%A'" lexbuf.StartPos.Column 
-# 200 "DomainSpecific\DsLex.fs"
+# 199 "DomainSpecific\DsLex.fs"
           )
   | _ -> failwith "lex"
 (* Rule lexString *)
 and _fslex_lexString s _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 59 "DomainSpecific\DsLex.fsl"
+# 58 "DomainSpecific\DsLex.fsl"
                             STRING(s.ToString()) 
-# 209 "DomainSpecific\DsLex.fs"
+# 208 "DomainSpecific\DsLex.fs"
           )
   | 1 -> ( 
-# 60 "DomainSpecific\DsLex.fsl"
+# 59 "DomainSpecific\DsLex.fsl"
                             lexString (s.Append(lexeme lexbuf)) lexbuf 
-# 214 "DomainSpecific\DsLex.fs"
+# 213 "DomainSpecific\DsLex.fs"
           )
   | _ -> failwith "lexString"
 
