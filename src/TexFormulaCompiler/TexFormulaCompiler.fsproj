@@ -8,11 +8,11 @@
     <ProjectGuid>b6c205c7-4b06-4f36-8406-1382a720963d</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>TexCalculator</RootNamespace>
-    <AssemblyName>TexCalculator</AssemblyName>
+    <AssemblyName>TexFormulaCompiler</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>TexCalculator</Name>
+    <Name>TexFormulaCompiler</Name>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
