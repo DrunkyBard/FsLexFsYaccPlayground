@@ -35,11 +35,3 @@ type Expr =
     | Lim of Expr * string * Expr  // function x limitVariable x approximationValue
     | DsAst of DomainSpecificAst
     | Neg of Expr
-
-type DomainSpecificAnalyzer = 
-    abstract member Analyze: DomainSpecificContext -> DomainSpecificAst 
-
-type SpecAnalyzer() = 
-    interface DomainSpecificAnalyzer with
-        member this.Analyze src = 
-            SRefValue(1)
