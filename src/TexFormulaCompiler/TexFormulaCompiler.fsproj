@@ -60,11 +60,12 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <FsYacc Include="TexParser.fsy">
-      <OtherFlags>-v --module TexParser</OtherFlags>
+      <OtherFlags>--module TexParser</OtherFlags>
     </FsYacc>
     <FsLex Include="TexLexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
+    <Compile Include="ErrorLogger.fs" />
     <Compile Include="TexAst.fs" />
     <Compile Include="TexParser.fs" />
     <Compile Include="TexLexer.fs" />

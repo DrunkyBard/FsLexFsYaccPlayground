@@ -3,8 +3,10 @@ open TexAst
 open System
 open Microsoft.FSharp.Text.Lexing
 open Microsoft.FSharp.Text.Parsing
+open ErrorHandling
 
 let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificContext -> obj>
+let mutable errorLogger = Unchecked.defaultof<ErrorLogger>
 
 let analyzeDomainSpecificLanguage token = domainSpecificAnalyzer token
 
@@ -119,11 +121,20 @@ highPriorityFunction:
 	| ID                         { Var($1) }
 
 binaryExpression:
-    | expression PLUS expression { Plus($1, $3) }
-    | expression SUB expression  { Sub($1, $3)  }
-    | expression MUL expression  { Mul($1, $3)  }
-    | expression DIV expression  { Div($1, $3)  }
-    | expression BMOD expression { Bmod($1, $3) }
+    | expression PLUS expression   { Plus($1, $3) }
+    | expression SUB expression    { Sub($1, $3)  }
+    | expression MUL expression    { Mul($1, $3)  }
+    | expression DIV expression    { Div($1, $3)  }
+    | expression BMOD expression   { Bmod($1, $3) }
+	//
+	| expression error expression  { 
+                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+                                       let errorMsg = sprintf "Unexpected symbol: %s" (lexbuf.Lexeme.ToString())
+                                       let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
+                                       errorLogger.ReportError(error)
+
+                                       Plus($1, $3) 
+                                   }
 
 argumentSet:
     | expression  { [$1] }
