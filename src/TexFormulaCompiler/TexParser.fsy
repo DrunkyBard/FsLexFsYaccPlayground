@@ -139,3 +139,12 @@ binaryExpression:
 argumentSet:
     | expression  { [$1] }
 	| argumentSet COMMA expression { $3::$1 }
+	//
+	| argumentSet error expression {
+                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+                                       let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (lexbuf.Lexeme.ToString())
+                                       let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
+                                       errorLogger.ReportError(error)
+                                       
+                                       $3::$1
+                                   }
