@@ -21,8 +21,6 @@ type token =
   | SUB
   | MUL
   | DIV
-  | LSQBRACE
-  | RSQBRACE
   | LPAREN
   | RPAREN
   | LCURLY
@@ -33,10 +31,6 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
-  | LSREFBRACKET
-  | RSREFBRACKET
-  | LMREFBRACKET
-  | RMREFBRACKET
   | MREFVAL of ((string*int) list)
   | SREFVAL of (string*int)
   | ID of (string)
@@ -64,8 +58,6 @@ type tokenId =
     | TOKEN_SUB
     | TOKEN_MUL
     | TOKEN_DIV
-    | TOKEN_LSQBRACE
-    | TOKEN_RSQBRACE
     | TOKEN_LPAREN
     | TOKEN_RPAREN
     | TOKEN_LCURLY
@@ -76,10 +68,6 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
-    | TOKEN_LSREFBRACKET
-    | TOKEN_RSREFBRACKET
-    | TOKEN_LMREFBRACKET
-    | TOKEN_RMREFBRACKET
     | TOKEN_MREFVAL
     | TOKEN_SREFVAL
     | TOKEN_ID
@@ -105,7 +93,13 @@ type nonTerminalId =
     | NONTERM_refValue
     | NONTERM_highPriorityFunction
     | NONTERM_binaryExpression
+    | NONTERM_binaryOperator
     | NONTERM_argumentSet
+    | NONTERM_missingBinary
+    | NONTERM_lCurly
+    | NONTERM_rCurly
+    | NONTERM_lParen
+    | NONTERM_rParen
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

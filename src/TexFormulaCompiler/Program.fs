@@ -28,9 +28,8 @@ let readLexems1 single lexbuf =
 
 [<EntryPoint>]
 let main argv = 
-    let parseState : IParseState = Unchecked.defaultof<IParseState>
-    let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
     let stringFormula = "1*2+5* {\\frac{\int_{[|for A with Id = \"A2\" select IntProp|]}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}}^{3!} * 5"
+    let stringFormula = "4+5}^{3}"
     let lexbuf = LexBuffer<char>.FromString stringFormula
 //    lexbuf.StartPos.Line
 //    lexbuf.StartPos.Column

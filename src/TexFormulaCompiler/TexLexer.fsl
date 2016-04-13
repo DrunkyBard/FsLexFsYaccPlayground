@@ -63,8 +63,6 @@ rule lex = parse
 	| rParen        { RPAREN }
 	| lCurly        { LCURLY }
 	| rCurly        { RCURLY }
-	| lSqBrace      { LSQBRACE }
-	| rSqBrace      { RSQBRACE }
 	| excl          { EXCL }
 	| eq            { EQ }
 	| comma         { COMMA }
