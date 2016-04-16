@@ -49,8 +49,15 @@ let report (parseState : IParseState) sym =
 %token PI EULERNUM
 %token EOF
 
+//%nonassoc lparen_error
+%nonassoc errorRule
+//%nonassoc rparen_error
+%left RCURLY INT COMMA
 %left PLUS SUB 
 %left DIV MUL BMOD
+%left missing
+%nonassoc high
+%right rcur
 
 %start start
 %type <TexAst.Expr> start
@@ -60,21 +67,26 @@ let report (parseState : IParseState) sym =
 
 start:
 	| expression EOF { $1 }
-	| ID expression EOF { 
-                            report parseState ($1)
-                            $2 
-                        }
+	//| ID expression EOF { 
+    //                        report parseState ($1)
+    //                        $2 
+    //                    }
 
 expression:
     | binaryExpression      { $1 }
 	| highPriorityFunction  { $1 }
+    //| errRule                    { $1 }
+   // | expression RCURLY %prec rparen_error                 {
+   //                                             report parseState "Unexpected RCURLY"
+   //                                             $1
+   //                                         }
 
 constant:
 	| PI       { Constant(Pi) }
 	| EULERNUM { Constant(E) }
 
 sum:
-    | SLASH SUM lCurly argumentSet rCurly      { Sum(List.rev $4) }
+    | SLASH SUM lCurly argumentSet RCURLY      { Sum(List.rev $4) }
 
 prod:
     | SLASH PROD lCurly argumentSet rCurly     { Prod(List.rev $4) }
@@ -86,16 +98,14 @@ frac:
     SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
 
 power:
-    | LCURLY expression rCurly CARET lCurly expression rCurly  { Pow($2, $6) }
-	//
-    | error expression rCurly CARET lCurly expression rCurly         { 
-                                                                   report parseState "Open left curly brace" 
-                                                                   Pow($2, $6)
-                                                               }
-    | expression rCurly CARET lCurly expression rCurly         { 
-                                                                   report parseState "Open left curly brace" 
-                                                                   Pow($1, $5)
-                                                               }
+    | LCURLY expression rCurly CARET lCurly expression rCurly %prec lPrec { 
+                                                                             let a = 1
+                                                                             Pow($2, $6) 
+                                                                          }
+    | rCurly CARET lCurly expression rCurly  { 
+                                                 report parseState "Right curly unmatched"
+                                                 Pow(Int(1), $4) 
+                                             }
 
 integral:
     | SLASH INTEGRAL UNDERSCORE lCurly expression rCurly CARET lCurly expression rCurly lCurly expression rCurly DIFF 
@@ -111,21 +121,17 @@ refPattern:
     | refValue                           { $1 }
 	| SLASH TEXT lCurly refValue rCurly  { $4 }
 
-trigonometry:
-    | SLASH SIN lCurly expression rCurly                                 { Sin($4, Int(1)) }
-    | SLASH SIN CARET lCurly expression rCurly lCurly expression rCurly  { Sin($8, $5) }
-    | SLASH COS lCurly expression rCurly                                 { Cos($4, Int(1)) }
-    | SLASH COS CARET lCurly expression rCurly lCurly expression rCurly  { Cos($8, $5) }
+
 
 refValue:
     | SREFVAL      { analyzeDomainSpecificSingleSource (fst $1) (snd $1) |> DsAst }
 	| MREFVAL      { analyzeDomainSpecificSources $1 |> DsAst }
 
-highPriorityFunction:
+highPriorityFunction:    
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }
     | SLASH INFTY                { Float(Double.PositiveInfinity) }
-    | LPAREN expression RPAREN   { $2 }
+    | LPAREN expression rParen   { $2 }
 	| trigonometry               { $1 }
 	| sum                        { $1 }
 	| prod                       { $1 }
@@ -137,32 +143,47 @@ highPriorityFunction:
 	| limit                      { $1 }
 	| refPattern                 { $1 }
 	| ID                         { Var($1) }
+    | errRule     { $1 }
+	//| expression RCURLY {
+    //                        report parseState "Unexpected RCURLY"
+    //                        $1
+    //                    }
+
+	
+trigonometry: 
+    | SLASH SIN lCurly expression rCurly                                 { Sin($4, Int(1)) }
+    | SLASH SIN CARET lCurly expression rCurly lCurly expression rCurly  { Sin($8, $5) }
+    | SLASH COS lCurly expression rCurly                                { Cos($4, Int(1)) }
+    | SLASH COS CARET lCurly expression rCurly lCurly expression rCurly  { Cos($8, $5) }
 
 binaryExpression:
-    | expression PLUS expression   { Plus($1, $3) }
+    | expression PLUS expression %prec PLUS  { 
+                                     let p = 1
+                                     Plus($1, $3)
+                                   }
     | expression SUB expression    { Sub($1, $3)  }
     | expression MUL expression    { Mul($1, $3)  }
     | expression DIV expression    { Div($1, $3)  }
     | expression BMOD expression   { Bmod($1, $3) }
 	//
-	| expression missingBinary expression  { 
-                                               let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-                                               let wrongLexeme, sPos, ePos = $2
-                                               let errorMsg = sprintf "Unexpected symbol: %s. Required binary operator" wrongLexeme
-                                               let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                                               errorLogger.ReportError(error)
-
-                                               Plus($1, $3) 
-                                           }
+	//| expression missingBinary expression %prec missing  { 
+    //                                           let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+    //                                           let wrongLexeme, sPos, ePos = $2
+    //                                           let errorMsg = sprintf "Unexpected symbol: %s. Required binary operator" wrongLexeme
+    //                                           let error = Error(errorMsg, {Line = sPos; Column = ePos})
+    //                                           errorLogger.ReportError(error)
+	//
+    //                                           Plus($1, $3) 
+    //                                       }
     
-	| binaryOperator expression    { 
-                                       report parseState "First operand" 
-                                       Plus(Int(0), $2)
-                                   }
-    | expression binaryOperator    { 
-                                       report parseState "Second operand" 
-                                       Plus($1, $1)
-                                   }
+	//| binaryOperator expression    { 
+    //                                   report parseState "First operand" 
+    //                                   Plus(Int(0), $2)
+    //                               }
+    //| expression binaryOperator    { 
+    //                                   report parseState "Second operand" 
+    //                                   Plus($1, $1)
+    //                               }
 
 binaryOperator:
     | PLUS {}
@@ -172,17 +193,17 @@ binaryOperator:
     | BMOD {}
 
 argumentSet:
-    | expression  { [$1] }
+    | expression %prec RCURLY  { [$1] }
 	| argumentSet COMMA expression { $3::$1 }
 	//
-	| argumentSet error expression {
-                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-                                       let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (lexbuf.Lexeme.ToString())
-                                       let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
-                                       errorLogger.ReportError(error)
-                                       
-                                       $3::$1
-                                   }
+	//| argumentSet error expression {
+    //                                   let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+    //                                   let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (lexbuf.Lexeme.ToString())
+    //                                   let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
+    //                                   errorLogger.ReportError(error)
+    //                                   
+    //                                   $3::$1
+    //                               }
 
 missingBinary: 
     | error  { 
@@ -219,10 +240,15 @@ lParen:
 //              }
 
 rParen:
-    | RPAREN { RPAREN }
+    | RPAREN  { RPAREN }
     | error   { 
                   report parseState "Right paren" 
                   RPAREN 
               }
 
-
+errRule:
+   // | expression RCURLY %prec rparen_error {
+    | expression RCURLY %prec rparen_error {
+                            report parseState "Unexpected RCURLY"
+                            $1
+                        }
