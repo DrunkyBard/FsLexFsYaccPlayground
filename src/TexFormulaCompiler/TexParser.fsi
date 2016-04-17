@@ -82,6 +82,7 @@ type nonTerminalId =
     | NONTERM_expression
     | NONTERM_constant
     | NONTERM_sum
+    | NONTERM_noname
     | NONTERM_prod
     | NONTERM_fact
     | NONTERM_frac
@@ -92,6 +93,7 @@ type nonTerminalId =
     | NONTERM_refValue
     | NONTERM_highPriorityFunction
     | NONTERM_trigonometry
+    | NONTERM_trigName
     | NONTERM_binaryExpression
     | NONTERM_binaryOperator
     | NONTERM_argumentSet
