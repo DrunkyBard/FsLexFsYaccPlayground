@@ -50,10 +50,12 @@ let report (parseState : IParseState) sym =
 %token EOF
 
 %left errorRule
-%left RCURLY RPAREN COMMA
+%left errorRule1
+%left RCURLY RPAREN COMMA INT
 %left PLUS SUB 
 %left DIV MUL BMOD
 %left uMinus
+%left expressionOverAll1
 %left expressionOverAll
 
 %start start
@@ -84,11 +86,29 @@ constant:
 
 sum:
     | SLASH SUM lCurly argumentSet rCurly      { Sum(List.rev $4) }
-	| SLASH noname lCurly argumentSet rCurly %prec errorRule    { Sum(List.rev $4) }
+	| SLASH recover lCurly argumentSet rCurly %prec errorRule    { 
+                                                                   let wrongLexeme, sPos, ePos = $2
+                                                                   let errorMsg = sprintf "Unexpected symbol: %s. Required SUM op" wrongLexeme
+                                                                   let error = Error(errorMsg, {Line = sPos; Column = ePos})
+                                                                   errorLogger.ReportError(error)
+                                                                   Sum(List.rev $4) 
+                                                                 }
+    | SLASH SUM lCurly rCurly  {
+                                   report parseState "SUM should have parameters"
+                                   Sum([Int(1)])
+                               }
 	| error SUM lCurly argumentSet rCurly %prec errorRule    { 
                                                                 report parseState "SUM operation should starts with SLASH"
                                                                 Sum(List.rev $4)
                                                              }
+    //| SLASH recover  %prec errorRule {
+    //                    let wrongLexeme, sPos, ePos = $2
+    //                    let errorMsg = sprintf "Unexpected symbol: %s. Required SUM1 op" wrongLexeme
+    //                    let error = Error(errorMsg, {Line = sPos; Column = ePos})
+    //                    errorLogger.ReportError(error)
+    //                    Sum([Int(1)]) 
+    //                  }
+    
 
 noname:
     | error    { report parseState "unexpected NAME"}
@@ -136,7 +156,7 @@ highPriorityFunction:
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }
     | SLASH INFTY                { Float(Double.PositiveInfinity) }
-    | LPAREN expression rParen   { $2 }
+    | LPAREN expression RPAREN   { $2 }
 	| trigonometry               { $1 }
 	| sum                        { $1 }
 	| prod                       { $1 }
@@ -209,21 +229,61 @@ binaryOperator:
 argumentSet:
     | expression %prec expressionOverAll  { 
                                            let a = 1
+                                           //report parseState "argPassed"
                                            [$1]
                                           }
-	| argumentSet COMMA expression { $3::$1 }
+	| argumentSet COMMA expression { 
+                                     //report parseState "argPassed"
+                                     $3::$1 
+                                   }
 	//
-	//| argumentSet error expression {
-    //                                   let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-    //                                   let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (lexbuf.Lexeme.ToString())
-    //                                   let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
-    //                                   errorLogger.ReportError(error)
-    //                                   
-    //                                   $3::$1
-    //                               }
+    //| expression expr %prec expressionOverAll {
+    //                       let lexeme, sPos, ePos, exVal = $2
+    //                       let errorMsg = sprintf "Unexpected symbol: %s. Comma444 symbol required" lexeme
+    //                       let error = Error(errorMsg, {Line = sPos; Column = ePos})
+    //                       errorLogger.ReportError(error)
+	//
+    //                       exVal::$1::[]
+    //                   }
+    //| argumentSet expr %prec expressionOverAll {
+    //                       let lexeme, sPos, ePos, exVal = $2
+    //                       let errorMsg = sprintf "Unexpected symbol: %s. Comma5 symbol required" lexeme
+    //                       let error = Error(errorMsg, {Line = sPos; Column = ePos})
+    //                       errorLogger.ReportError(error)
+	//
+    //                       exVal::$1
+    //                   }
+	//| expr expression %prec MUL {
+    //                             report parseState "Comma111"
+    //                             $1
+    //                         }
+	| argumentSet error expression %prec expressionOverAll1 {
+                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+                                       let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (new String(lexbuf.Lexeme))
+                                       let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
+                                       errorLogger.ReportError(error)
+                                       
+                                       $3::$1
+                                   }
+    | argumentSet expr %prec expressionOverAll1 {
+                                       let lexeme, sPos, ePos, exVal = $2
+                                       let errorMsg = "Expected comma symbol"
+                                       let error = Error(errorMsg, {Line = sPos; Column = ePos})
+                                       errorLogger.ReportError(error)
+                                       
+                                       exVal::$1
+                                   }
 
-missingBinary: 
-    | error  { 
+expr:
+    | expression %prec expressionOverAll1 {
+                     let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+                     let posis = parseState.GetInput(1)
+                     let posix = parseState.InputStartPosition(1)
+                     (new string(lexbuf.Lexeme), posix.Line, posix.Column, $1) 
+                 }
+
+recover: 
+    | error %prec errorRule { 
                  let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
@@ -272,4 +332,8 @@ errRule:
     | expression RPAREN  {
                             report parseState "Unexpected RPAREN"
                             $1
-                        }
+                         }
+    | LPAREN expression %prec expressionOverAll  {
+                             report parseState "LPAREN WITHOUT RPAREN"
+                             $2
+                         }

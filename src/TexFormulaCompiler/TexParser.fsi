@@ -97,7 +97,8 @@ type nonTerminalId =
     | NONTERM_binaryExpression
     | NONTERM_binaryOperator
     | NONTERM_argumentSet
-    | NONTERM_missingBinary
+    | NONTERM_expr
+    | NONTERM_recover
     | NONTERM_lCurly
     | NONTERM_rCurly
     | NONTERM_lParen
