@@ -56,6 +56,7 @@ let report (parseState : IParseState) sym =
 %left errorRule
 %left errorRule1
 %left loose_closing_paren
+%left missingSymbol
 %left argSetPriority
 %left RCURLY RPAREN COMMA
 %left PLUS SUB funcPriority
@@ -130,11 +131,11 @@ frac:
     SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
 
 power:
-    | LCURLY expression rCurly CARET lCurly expression rCurly             { 
+    | LCURLY expression rCurly caret lCurly expression rCurly             { 
                                                                              let a = 1
                                                                              Pow($2, $6) 
                                                                           }
-    | rCurly CARET lCurly expression rCurly  { 
+    | rCurly caret lCurly expression rCurly  { 
                                                  report parseState "Right curly unmatched"
                                                  Pow(Int(1), $4) 
                                              }
@@ -303,6 +304,14 @@ recover:
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
 
+caret:
+    | CARET  { Some(CARET) }
+	| LCURLY { Some(LCURLY) }
+	| RCURLY { Some(RCURLY) }
+	| LPAREN { Some(LPAREN) }
+	| RPAREN { Some(RPAREN) }
+	| error %prec missingSymbol { None }
+
 lCurly:
     | LCURLY  { LCURLY }
 	| error   { 
@@ -330,6 +339,8 @@ rParen:
                   report parseState "Right paren" 
                   RPAREN 
               }
+
+
 
 errRule:
    // | expression RCURLY %prec rparen_error {
