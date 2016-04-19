@@ -19,6 +19,10 @@ let analyzeDomainSpecificSource token startPos =
 let analyzeDomainSpecificSingleSource src pos = 
     analyzeDomainSpecificSource (SRefValueSrc(src)) pos |> SRefValue
 
+let isSome = function
+    | Some(_) -> true
+    | None -> false
+
 let analyzeDomainSpecificSources sources = 
     let rec analyzeDomainSpecificSourcesInternal sources state = 
         match sources with
@@ -51,12 +55,13 @@ let report (parseState : IParseState) sym =
 
 %left errorRule
 %left errorRule1
-%left RCURLY RPAREN COMMA INT
+%left loose_closing_paren
+%left argSetPriority
+%left RCURLY RPAREN COMMA
 %left PLUS SUB funcPriority
 %left DIV MUL BMOD
 %right EXCL
 %left uMinus
-%left loose_closing_paren
 %left expressionOverAll1
 %left expressionOverAll
 
@@ -87,7 +92,7 @@ constant:
 	| EULERNUM { Constant(E) }
 
 sum:
-    | SLASH SUM lCurly argumentSet RCURLY      { Sum(List.rev $4) }
+    | SLASH SUM lCurly argumentSet rCurly       { Sum(List.rev $4) }
 	| SLASH recover lCurly argumentSet rCurly %prec errorRule    { 
                                                                    let wrongLexeme, sPos, ePos = $2
                                                                    let errorMsg = sprintf "Unexpected symbol: %s. Required SUM op" wrongLexeme
@@ -125,7 +130,7 @@ frac:
     SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
 
 power:
-    | LCURLY expression rCurly CARET lCurly expression rCurly  { 
+    | LCURLY expression rCurly CARET lCurly expression rCurly             { 
                                                                              let a = 1
                                                                              Pow($2, $6) 
                                                                           }
@@ -230,14 +235,14 @@ binaryExpression:
                          }
 
 binaryOperator:
-    | PLUS {}
-    | SUB  {}
-    | MUL  {}
-    | DIV  {}
-    | BMOD {}
+    | PLUS %prec errorRule {}
+    | SUB  %prec errorRule {}
+    | MUL  %prec errorRule {}
+    | DIV  %prec errorRule {}
+    | BMOD %prec errorRule {}
 
 argumentSet:
-    | expression %prec expressionOverAll  { 
+    | expression %prec argSetPriority  { 
                                            let a = 1
                                            //report parseState "argPassed"
                                            [$1]
@@ -298,27 +303,6 @@ recover:
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
 
-
-
-errRule:
-   // | expression RCURLY %prec rparen_error {
-    | expression RCURLY {
-                            report parseState "Unexpected RCURLY"
-                            $1
-                        }
-    | expression RPAREN  {
-                            report parseState "Unexpected RPAREN"
-                            $1
-                         }
-    | LPAREN expression %prec loose_closing_paren  {
-                             report parseState "LPAREN WITHOUT RPAREN"
-                             $2
-                         }
-    | LCURLY expression %prec loose_closing_paren  {
-                             report parseState "LCURLY WITHOUT RCURLY"
-                             $2
-                         }
-
 lCurly:
     | LCURLY  { LCURLY }
 	| error   { 
@@ -327,10 +311,10 @@ lCurly:
               }
  
 rCurly:
-    | RCURLY { RCURLY }
+    | RCURLY { Some(RCURLY) }
 	| error %prec errorRule  { 
                   report parseState "Right curly brace" 
-                  RCURLY 
+                  None 
               }
 
 lParen:
@@ -346,3 +330,24 @@ rParen:
                   report parseState "Right paren" 
                   RPAREN 
               }
+
+errRule:
+   // | expression RCURLY %prec rparen_error {
+    | expression rCurly %prec loose_closing_paren {
+                            if isSome $2 then report parseState "Unexpected RCURLY"
+                            $1
+                        }
+    | expression RPAREN %prec loose_closing_paren {
+                            report parseState "Unexpected RPAREN"
+                            $1
+                         }
+    | LPAREN expression %prec loose_closing_paren  {
+                             report parseState "LPAREN WITHOUT RPAREN"
+                             $2
+                         }
+    | LCURLY expression %prec loose_closing_paren  {
+                             report parseState "LCURLY WITHOUT RCURLY"
+                             $2
+                         }
+
+

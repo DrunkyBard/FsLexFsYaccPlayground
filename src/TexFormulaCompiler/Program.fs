@@ -33,7 +33,10 @@ let main argv =
     let stringFormula = "\sin{2+7}"
     let stringFormula = "sum{2+7}"
     let stringFormula = "sin{2+7}"
-    let stringFormula = @"sum {{2}^{2}, 2, 3}"
+    let stringFormula = @"sum {{2}^{2}, 2 ) 3}}"
+    let stringFormula = "1*2+5* {\\frac{\int_{[|for A with Id = \"A2\" select IntProp|]}^{\pi} {x} d{x}}{((4 + \sum{1+2!, 3!+4})*3)}}^{3!} * 5"
+//    let stringFormula = @"\sum{1+2!, 3!+4}"
+
 //    let stringFormula = "\int_{2}^{3}{x + 2}d{x}"
 //    let stringFormula = "{2}^{3}}}}}}"
     let lexbuf = LexBuffer<char>.FromString stringFormula
@@ -46,6 +49,7 @@ let main argv =
         compiler.Compile stringFormula
         |> QuotationEvaluator.ToLinqExpression :?> Expression<Func<Unit, float>>
     let result = intermediateExpression.Compile().Invoke()
+    printfn "%s" stringFormula
     printfn "%A" result
     Console.ReadLine()
     0
