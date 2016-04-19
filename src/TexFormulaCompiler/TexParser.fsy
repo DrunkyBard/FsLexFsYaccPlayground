@@ -52,9 +52,11 @@ let report (parseState : IParseState) sym =
 %left errorRule
 %left errorRule1
 %left RCURLY RPAREN COMMA INT
-%left PLUS SUB 
+%left PLUS SUB funcPriority
 %left DIV MUL BMOD
+%right EXCL
 %left uMinus
+%left loose_closing_paren
 %left expressionOverAll1
 %left expressionOverAll
 
@@ -73,7 +75,7 @@ start:
 
 expression:
     | binaryExpression      { $1 }
-	| highPriorityFunction  { $1 }
+	| highPriorityFunction %prec funcPriority  { $1 }
     //| errRule                    { $1 }
    // | expression RCURLY %prec rparen_error                 {
    //                                             report parseState "Unexpected RCURLY"
@@ -85,7 +87,7 @@ constant:
 	| EULERNUM { Constant(E) }
 
 sum:
-    | SLASH SUM lCurly argumentSet rCurly      { Sum(List.rev $4) }
+    | SLASH SUM lCurly argumentSet RCURLY      { Sum(List.rev $4) }
 	| SLASH recover lCurly argumentSet rCurly %prec errorRule    { 
                                                                    let wrongLexeme, sPos, ePos = $2
                                                                    let errorMsg = sprintf "Unexpected symbol: %s. Required SUM op" wrongLexeme
@@ -218,6 +220,14 @@ binaryExpression:
                                        report parseState "Second operand" 
                                        Plus($1, $1)
                                    }
+    | expression expr   %prec expressionOverAll { 
+                            let lexeme, sPos, ePos, exVal = $2
+                            let errorMsg = "MAYBE missing binary operator?"
+                            let error = Error(errorMsg, {Line = sPos; Column = ePos})
+                            errorLogger.ReportError(error)
+                            
+                            Plus($1, exVal)
+                         }
 
 binaryOperator:
     | PLUS {}
@@ -288,6 +298,27 @@ recover:
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
 
+
+
+errRule:
+   // | expression RCURLY %prec rparen_error {
+    | expression RCURLY {
+                            report parseState "Unexpected RCURLY"
+                            $1
+                        }
+    | expression RPAREN  {
+                            report parseState "Unexpected RPAREN"
+                            $1
+                         }
+    | LPAREN expression %prec loose_closing_paren  {
+                             report parseState "LPAREN WITHOUT RPAREN"
+                             $2
+                         }
+    | LCURLY expression %prec loose_closing_paren  {
+                             report parseState "LCURLY WITHOUT RCURLY"
+                             $2
+                         }
+
 lCurly:
     | LCURLY  { LCURLY }
 	| error   { 
@@ -296,8 +327,8 @@ lCurly:
               }
  
 rCurly:
-    | RCURLY  { RCURLY }
-	| error   { 
+    | RCURLY { RCURLY }
+	| error %prec errorRule  { 
                   report parseState "Right curly brace" 
                   RCURLY 
               }
@@ -309,31 +340,9 @@ lParen:
                   LPAREN 
               }
 
-//slash:
-//    | SLASH   { SLASH }
-//    | error   { 
-//                  report parseState "Left paren" 
-//                  SLASH 
-//              }
-
 rParen:
     | RPAREN  { RPAREN }
     | error   { 
                   report parseState "Right paren" 
                   RPAREN 
               }
-
-errRule:
-   // | expression RCURLY %prec rparen_error {
-    | expression RCURLY  {
-                            report parseState "Unexpected RCURLY"
-                            $1
-                        }
-    | expression RPAREN  {
-                            report parseState "Unexpected RPAREN"
-                            $1
-                         }
-    | LPAREN expression %prec expressionOverAll  {
-                             report parseState "LPAREN WITHOUT RPAREN"
-                             $2
-                         }

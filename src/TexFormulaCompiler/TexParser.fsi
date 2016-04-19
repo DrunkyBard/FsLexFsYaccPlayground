@@ -99,11 +99,11 @@ type nonTerminalId =
     | NONTERM_argumentSet
     | NONTERM_expr
     | NONTERM_recover
+    | NONTERM_errRule
     | NONTERM_lCurly
     | NONTERM_rCurly
     | NONTERM_lParen
     | NONTERM_rParen
-    | NONTERM_errRule
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 
