@@ -57,8 +57,8 @@ let report (parseState : IParseState) sym =
 %left errorRule1
 %left loose_closing_paren
 %left missingSymbol
+%left LCURLY RCURLY RPAREN COMMA
 %left argSetPriority
-%left RCURLY RPAREN COMMA
 %left PLUS SUB funcPriority
 %left DIV MUL BMOD
 %right EXCL
@@ -101,7 +101,7 @@ sum:
                                                                    errorLogger.ReportError(error)
                                                                    Sum(List.rev $4) 
                                                                  }
-    | SLASH SUM lCurly rCurly  {
+    | SLASH SUM lCurly rCurly %prec errorRule {
                                    report parseState "SUM should have parameters"
                                    Sum([Int(1)])
                                }
@@ -109,6 +109,10 @@ sum:
                                                                 report parseState "SUM operation should starts with SLASH"
                                                                 Sum(List.rev $4)
                                                              }
+    | expression LCURLY argumentSet rCurly %prec expressionOverAll {
+                                             report parseState "Some ANOTHER error"
+                                             Sum(List.rev $3)
+                                         }
     //| SLASH recover  %prec errorRule {
     //                    let wrongLexeme, sPos, ePos = $2
     //                    let errorMsg = sprintf "Unexpected symbol: %s. Required SUM1 op" wrongLexeme
@@ -131,14 +135,19 @@ frac:
     SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
 
 power:
-    | LCURLY expression rCurly caret lCurly expression rCurly             { 
+    | LCURLY expression rCurly caret lCurly expression rCurly    %prec expressionOverAll         { 
                                                                              let a = 1
                                                                              Pow($2, $6) 
+                                                                          }
+    | LCURLY expression rCurly lCurly expression rCurly    %prec expressionOverAll         { 
+                                                                             report parseState "MISSING CARET111"
+                                                                             Pow($2, $5) 
                                                                           }
     | rCurly caret lCurly expression rCurly  { 
                                                  report parseState "Right curly unmatched"
                                                  Pow(Int(1), $4) 
                                              }
+    
 
 integral:
     | SLASH INTEGRAL UNDERSCORE lCurly expression rCurly CARET lCurly expression rCurly lCurly expression rCurly DIFF 
@@ -185,9 +194,9 @@ highPriorityFunction:
 	
 trigonometry: 
     | SLASH SIN lCurly expression rCurly                                 { Sin($4, Int(1)) }
-    | SLASH SIN CARET lCurly expression rCurly lCurly expression rCurly  { Sin($8, $5) }
+    | SLASH SIN caret lCurly expression rCurly lCurly expression rCurly  { Sin($8, $5) }
     | SLASH COS lCurly expression rCurly                                 { Cos($4, Int(1)) }
-    | SLASH COS CARET lCurly expression rCurly lCurly expression rCurly  { Cos($8, $5) }
+    | SLASH COS caret lCurly expression rCurly lCurly expression rCurly  { Cos($8, $5) }
 	| error trigName lCurly expression rCurly %prec errorRule    { 
                                                                      report parseState "SIN/COS operation should starts with SLASH"
                                                                      Sin($4, Int(1))
@@ -304,54 +313,63 @@ recover:
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
 
-caret:
-    | CARET  { Some(CARET) }
-	| LCURLY { Some(LCURLY) }
-	| RCURLY { Some(RCURLY) }
-	| LPAREN { Some(LPAREN) }
-	| RPAREN { Some(RPAREN) }
-	| error %prec missingSymbol { None }
+//symbol:
+//    | CARET  { Some(CARET) }
+//	| LCURLY { Some(LCURLY) }
+//	| RCURLY { Some(RCURLY) }
+//	| LPAREN { Some(LPAREN) }
+//	| RPAREN { Some(RPAREN) }
+//	| error %prec missingSymbol { None }
 
 lCurly:
     | LCURLY  { LCURLY }
-	| error   { 
+	| recover   { 
                   report parseState "Left curly brace" 
                   LCURLY 
-              }
+                }
  
 rCurly:
     | RCURLY { Some(RCURLY) }
-	| error %prec errorRule  { 
-                  report parseState "Right curly brace" 
-                  None 
-              }
+	| recover %prec errorRule  { 
+                                   report parseState "Right curly brace" 
+                                   None
+                               }
 
 lParen:
     | LPAREN  { LPAREN }
-    | error   { 
+    | recover   { 
                   report parseState "Left paren" 
                   LPAREN 
-              }
+                }
 
 rParen:
     | RPAREN  { RPAREN }
-    | error   { 
+    | recover   { 
                   report parseState "Right paren" 
                   RPAREN 
+                }
+
+caret:
+    | CARET { CARET }
+    | recover {
+                  report parseState "MISSING CARET"
+                  CARET
               }
-
-
 
 errRule:
    // | expression RCURLY %prec rparen_error {
     | expression rCurly %prec loose_closing_paren {
                             if isSome $2 then report parseState "Unexpected RCURLY"
+                            //match $2 with
+                            //    | Some(RCURLY) -> report parseState "Unexpected RCURLY"
+                            //    | _ -> report parseState "Unexpected SYMBOLLLL"
+                            
                             $1
                         }
-    | expression RPAREN %prec loose_closing_paren {
-                            report parseState "Unexpected RPAREN"
-                            $1
-                         }
+    //| expression RPAREN %prec loose_closing_paren {
+    //                        report parseState "Unexpected RPAREN"
+    //                        $1
+    //                     }
     | LPAREN expression %prec loose_closing_paren  {
                              report parseState "LPAREN WITHOUT RPAREN"
                              $2
