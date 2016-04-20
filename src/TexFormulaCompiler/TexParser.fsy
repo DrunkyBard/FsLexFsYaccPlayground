@@ -56,13 +56,16 @@ let report (parseState : IParseState) sym =
 %left errorRule
 %left errorRule1
 %left loose_closing_paren
+%left recoverRule
 %left missingSymbol
 %left LCURLY RCURLY RPAREN COMMA
+%left ID
 %left argSetPriority
 %left PLUS SUB funcPriority
 %left DIV MUL BMOD
 %right EXCL
 %left uMinus
+%left unexpectedEnumeration
 %left expressionOverAll1
 %left expressionOverAll
 
@@ -110,9 +113,17 @@ sum:
                                                                 Sum(List.rev $4)
                                                              }
     | expression LCURLY argumentSet rCurly %prec expressionOverAll {
-                                             report parseState "Some ANOTHER error"
+                                             let pos = parseState.InputStartPosition(2)
+                                             let posis = parseState.GetInput(2)
+                                             let posis1 = parseState.GetInput(1)
+                                             let posis2 = parseState.InputStartPosition(1)
+                                             let posis3 = parseState.InputEndPosition(1)
+                                             let errorMsg = "Unexpected left curly brace expression"
+                                             let error = Error(errorMsg, {Line = pos.Line; Column = pos.Column})
+                                             errorLogger.ReportError(error)
                                              Sum(List.rev $3)
                                          }
+
     //| SLASH recover  %prec errorRule {
     //                    let wrongLexeme, sPos, ePos = $2
     //                    let errorMsg = sprintf "Unexpected symbol: %s. Required SUM1 op" wrongLexeme
@@ -135,7 +146,7 @@ frac:
     SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
 
 power:
-    | LCURLY expression rCurly caret lCurly expression rCurly    %prec expressionOverAll         { 
+    | LCURLY expression rCurly CARET lCurly expression rCurly    %prec expressionOverAll         { 
                                                                              let a = 1
                                                                              Pow($2, $6) 
                                                                           }
@@ -143,7 +154,11 @@ power:
                                                                              report parseState "MISSING CARET111"
                                                                              Pow($2, $5) 
                                                                           }
-    | rCurly caret lCurly expression rCurly  { 
+    //| LCURLY expression rCurly recover LCURLY expression RCURLY    %prec expressionOverAll         { 
+    //                                                                         report parseState "MISSING CARET111"
+    //                                                                         Pow($2, $6) 
+    //                                                                      }
+    | expression CARET lCurly expression rCurly  { 
                                                  report parseState "Right curly unmatched"
                                                  Pow(Int(1), $4) 
                                              }
@@ -243,6 +258,19 @@ binaryExpression:
                             
                             Plus($1, exVal)
                          }
+    | expression sym expr   %prec expressionOverAll { 
+                            let lexeme, sPos, ePos, exVal = $3
+                            let errorMsg = "MAYBE missing binary operator????"
+                            let error = Error(errorMsg, {Line = sPos; Column = ePos})
+                            errorLogger.ReportError(error)
+                            
+                            Plus($1, exVal)
+                         }
+
+sym:
+   | COMMA {}
+   | CARET {}
+
 
 binaryOperator:
     | PLUS %prec errorRule {}
@@ -308,7 +336,7 @@ expr:
                  }
 
 recover: 
-    | error %prec errorRule { 
+    | error %prec recoverRule { 
                  let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
@@ -322,14 +350,14 @@ recover:
 //	| error %prec missingSymbol { None }
 
 lCurly:
-    | LCURLY  { LCURLY }
+    | LCURLY    { LCURLY }
 	| recover   { 
                   report parseState "Left curly brace" 
                   LCURLY 
                 }
  
 rCurly:
-    | RCURLY { Some(RCURLY) }
+    | RCURLY  { Some(RCURLY) }
 	| recover %prec errorRule  { 
                                    report parseState "Right curly brace" 
                                    None
@@ -358,6 +386,10 @@ caret:
 
 errRule:
    // | expression RCURLY %prec rparen_error {
+    | LCURLY expression rCurly %prec loose_closing_paren {
+                                                           report parseState "LCURLY RCURLY expression"
+                                                           $2
+                                                         }
     | expression rCurly %prec loose_closing_paren {
                             if isSome $2 then report parseState "Unexpected RCURLY"
                             //match $2 with
@@ -378,5 +410,11 @@ errRule:
                              report parseState "LCURLY WITHOUT RCURLY"
                              $2
                          }
+
+//    | argumentSet %prec loose_closing_paren {
+//                                              
+//                                            
+//                                            
+//                                            }
 
 
