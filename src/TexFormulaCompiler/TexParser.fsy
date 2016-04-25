@@ -1,9 +1,27 @@
 ﻿%{
 open TexAst
 open System
+open System.Diagnostics
 open Microsoft.FSharp.Text.Lexing
 open Microsoft.FSharp.Text.Parsing
 open ErrorHandling
+
+type TokenInternal = 
+    | FRAC
+    | SQRT
+    | SUM
+    | PROD
+    | INTEGRAL
+    | SIN
+    | COS
+    | POW
+    | BINARY
+
+type ParenToken = 
+    | LPAREN
+    | RPAREN
+    | LCURLY
+    | RCURLY
 
 let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificContext -> obj>
 let mutable errorLogger = Unchecked.defaultof<ErrorLogger>
@@ -39,6 +57,31 @@ let report (parseState : IParseState) sym =
     let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
     errorLogger.ReportError(error)
 
+let checkForArguments token argsOpt parseState =
+    match (token, argsOpt) with
+        | (_, None) -> report parseState "SOME should have parameters"; [Int(1)]
+        | (_, Some(args)) -> 
+                             Debug.Assert((Seq.length args) <> 0)
+                             match (token, Seq.length args) with
+                                 | (SUM, _) | (PROD, _) -> args
+                                 | (_, l) when l > 1 -> report parseState "SOME should have only one arg"; [args.Head]
+                                 | (_, _) -> args
+
+let checkForArgument token argsOpt parseState = checkForArguments token argsOpt parseState |> Seq.head
+
+let (|UnmatchedLeft|UnmatchedRight|UnmatchedBoth|MatchedBoth|) (actualLp, actualRp, expectedLp, expectedRp) = 
+    if actualLp <> expectedLp && actualRp <> expectedRp then UnmatchedBoth
+    elif actualLp <> expectedLp then UnmatchedLeft
+    elif actualRp <> expectedRp then UnmatchedRight
+    else MatchedBoth
+
+let checkBalancedParen actualLp actualRp expectedLp expectedRp parseState = 
+    match (actualLp, actualRp, expectedLp, expectedRp) with
+        | UnmatchedLeft   -> report parseState "Unmatched left"
+        | UnmatchedRight  -> report parseState "Unmatched right"
+        | UnmatchedBoth   -> report parseState "Unmatched both"
+        | MatchedBoth     -> ()
+
 %}
 
 %token <int> INT
@@ -55,15 +98,20 @@ let report (parseState : IParseState) sym =
 
 %left errorRule
 %left errorRule1
-%left loose_closing_paren
+//%left loose_closing_paren
 %left recoverRule
 %left missingSymbol
-%left LCURLY RCURLY LPAREN RPAREN COMMA
-%left ID
+%right intError
+%left SLASH
+%left RCURLY RPAREN COMMA 
 %left argSetPriority
-%left PLUS SUB funcPriority
-%left DIV MUL BMOD
-%right EXCL
+%right LCURLY LPAREN loose_closing_paren
+%left INT EULERNUM PI
+%left ID
+%left PLUS SUB
+%left DIV MUL BMOD TIMES funcPriority 
+%right EXCL CARET
+%left funcSyntaxError
 %left uMinus
 %left unexpectedEnumeration
 %left expressionOverAll1
@@ -80,7 +128,7 @@ start:
 
 expression:
     | binaryExpression      { $1 }
-	| highPriorityFunction %prec funcPriority  { $1 }
+	| highPriorityFunction   { $1 }
 
 
 constant:
@@ -88,43 +136,120 @@ constant:
 	| EULERNUM { Constant(E) }
 
 sum:
-    | SLASH SUM lCurly argumentSet rCurly       { Sum(List.rev $4) }
+    | SLASH SUM arguments  {
+                             let args = checkForArguments TokenInternal.SUM $3 parseState
+                             Sum(List.rev args)
+                           }
+    | SUM arguments        {
+                               report parseState "SUM operation should starts with SLASH"
+                               let args = checkForArguments TokenInternal.SUM $2 parseState
+                               Sum(List.rev args)
+                           }
+    | SUM {
+            report parseState "SUM HAS NO args"
+            Sum([Int(1)])
+          }
+    | SLASH SUM {
+            report parseState "SUM HAS NO args"
+            Sum([Int(1)])
+          }
 
 noname:
     | error    { report parseState "unexpected NAME"}
 
 prod:
-    | SLASH PROD lCurly argumentSet rCurly     { Prod(List.rev $4) }
+    | SLASH PROD arguments  { 
+                              let args = checkForArguments TokenInternal.PROD $3 parseState
+                              Prod(List.rev args) 
+                            }
+	| PROD arguments        {
+                              report parseState "SUM operation should starts with SLASH"
+                              let args = checkForArguments TokenInternal.PROD $2 parseState
+                              Prod(List.rev args) 
+                            }
+    | PROD                  {
+                              report parseState "PROD HAS NO args"
+                              Sum([Int(1)])
+                            }
+    | SLASH PROD            {
+                              report parseState "PROD HAS NO args"
+                              Sum([Int(1)])
+                            }
 
 fact:
     highPriorityFunction EXCL  { Fact($1) }
 
-frac:
-    SLASH FRAC lCurly expression rCurly lCurly expression rCurly   { Div($4, $7) }
-
 power:
-    | LCURLY expression rCurly CARET lCurly expression rCurly    %prec expressionOverAll         { 
-                                                                             let a = 1
-                                                                             Pow($2, $6) 
-                                                                          }
-    
-    
+    | arguments intCaret arguments  { 
+                                   let arg1 = checkForArgument TokenInternal.POW $1 parseState
+                                   let arg2 = checkForArgument TokenInternal.POW $3 parseState
+                                   Pow(arg1, arg2) 
+                                 }
+   // | arguments arguments        { 
+   //                                let arg1 = checkForArgument TokenInternal.POW $1 parseState
+   //                                let arg2 = checkForArgument TokenInternal.POW $2 parseState
+   //                                report parseState "MISSING CARET!!111223232"
+   //                                Pow(arg1, arg2) 
+   //                              }
+
+frac:
+    | SLASH FRAC arguments arguments   { 
+                                         let arg1 = checkForArgument TokenInternal.FRAC $3 parseState
+                                         let arg2 = checkForArgument TokenInternal.FRAC $4 parseState
+                                         Div(arg1, arg2) 
+                                       }
+	| SLASH FRAC arguments error       {
+                                         let arg = checkForArgument TokenInternal.FRAC $3 parseState
+                                         report parseState "FRAC Missing second arg!"
+                                         Div(arg, Int(1))
+                                       }
+    | FRAC arguments                   {
+                                         let arg = checkForArgument TokenInternal.FRAC $2 parseState
+                                         report parseState "FRAC Missing second arg"
+                                         Div(arg, Int(1))
+                                       }
+	| FRAC                             {
+                                         report parseState "FRAC HAS NO args"
+                                         Div(Int(1), Int(1))
+                                       }
+	| SLASH FRAC                       {
+                                         report parseState "FRAC HAS NO args"
+                                         Div(Int(1), Int(1))
+                                       }
+
+integralPrefix:
+    | SLASH INTEGRAL {}
+    | INTEGRAL { report parseState "INTEGRAP op should start with SLASH" }
 
 integral:
-    | SLASH INTEGRAL UNDERSCORE lCurly expression rCurly CARET lCurly expression rCurly lCurly expression rCurly DIFF 
-                                                                                                    { Integral($12, $14, $5, $9) }
-																									
-    | SLASH INTEGRAL UNDERSCORE lCurly expression rCurly CARET lCurly expression rCurly lCurly expression DIFF rCurly  
-                                                                                                    { Integral($12, $13, $5, $9) }
+    | integralPrefix intUnderscore arguments intCaret arguments arguments intDiff { 
+                      let arg1 = checkForArgument TokenInternal.INTEGRAL $6 parseState
+                      let arg2 = checkForArgument TokenInternal.INTEGRAL $3 parseState
+                      let arg3 = checkForArgument TokenInternal.INTEGRAL $5 parseState
+                      //report parseState "INTEGRAL MISSING caret"
+                      Integral(arg1, $7, arg2, arg3) 
+                    }
 
-limit:
-    SLASH LIM UNDERSCORE lCurly ID TO expression rCurly lCurly expression rCurly  { Lim($10, $5, $7) }
+intDiff:
+    | DIFF { $1 }
+    |      { 
+             report parseState "INTEGRAL DIFF missing"
+             "x"
+           }
+
+intCaret:
+    | CARET {}
+    | error %prec intError { report parseState "INTEGER CARET missing"}
+intUnderscore:
+    | UNDERSCORE {}
+    | error %prec intError { report parseState "INTEGER UNDERSCORE missing"}
+
+//limit:
+//    SLASH LIM UNDERSCORE lCurly ID TO expression rCurly lCurly expression rCurly  { Lim($10, $5, $7) }
 
 refPattern:
     | refValue                           { $1 }
-	| SLASH TEXT lCurly refValue rCurly  { $4 }
-
-
+	| SLASH TEXT LCURLY refValue RCURLY  { $4 }
 
 refValue:
     | SREFVAL      { analyzeDomainSpecificSingleSource (fst $1) (snd $1) |> DsAst }
@@ -134,7 +259,7 @@ highPriorityFunction:
     | INT                        { Int($1) }
     | FLOAT                      { Float($1) }
     | SLASH INFTY                { Float(Double.PositiveInfinity) }
-    | LPAREN expression rParen   { $2 }
+    | LPAREN expression RPAREN   { $2 }
 	| trigonometry               { $1 }
 	| sum                        { $1 }
 	| prod                       { $1 }
@@ -143,26 +268,47 @@ highPriorityFunction:
 	| constant                   { $1 }
     | power                      { $1 }
     | frac                       { $1 }
-	| limit                      { $1 }
+	//| limit                    { $1 }
 	| refPattern                 { $1 }
 	| ID                         { Var($1) }
-    | funcSyntaxError            { $1 }
+    //| funcSyntaxError          { $1 }
     | parenError                 { $1 }
 
 	
-trigonometry: 
-    | SLASH SIN lCurly expression rCurly                                 { Sin($4, Int(1)) }
-    | SLASH SIN caret lCurly expression rCurly lCurly expression rCurly  { Sin($8, $5) }
-    | SLASH COS lCurly expression rCurly                                 { Cos($4, Int(1)) }
-    | SLASH COS caret lCurly expression rCurly lCurly expression rCurly  { Cos($8, $5) }
-	| error trigName lCurly expression rCurly %prec errorRule    { 
-                                                                     report parseState "SIN/COS operation should starts with SLASH"
-                                                                     Sin($4, Int(1))
-                                                                  }
+sinPrefix:
+    | SLASH SIN {}
+    | SIN       { report parseState "SIN OP should starts with SLASH symbol"}
 
-trigName: 
-    | SIN {}
-	| COS {}
+cosPrefix:
+    | SLASH COS {}
+    | COS       { report parseState "COS OP should starts with SLASH symbol"}
+
+trigonometry: 
+	| sinPrefix arguments                  { 
+                                             let arg = checkForArgument TokenInternal.SIN $2 parseState
+                                             Sin(arg, Int(1)) 
+                                           }
+    | sinPrefix CARET arguments arguments  { 
+                                             let arg1 = checkForArgument TokenInternal.SIN $3 parseState
+                                             let arg2 = checkForArgument TokenInternal.SIN $4 parseState
+                                             Sin(arg1, arg2)
+                                           }
+    | sinPrefix arguments arguments        { 
+                                             report parseState "CARET symbol for SIN missing"
+                                             let arg1 = checkForArgument TokenInternal.SIN $2 parseState
+                                             let arg2 = checkForArgument TokenInternal.SIN $3 parseState
+                                             Sin(arg1, arg2)
+                                           }
+    | cosPrefix arguments                  { 
+                                             let arg = checkForArgument TokenInternal.COS $2 parseState
+                                             Cos(arg, Int(1))
+                                           }
+    | cosPrefix CARET arguments arguments  { 
+                                             report parseState "CARET symbol for COS missing"
+                                             let arg1 = checkForArgument TokenInternal.COS $3 parseState
+                                             let arg2 = checkForArgument TokenInternal.COS $4 parseState
+                                             Cos(arg1, arg2)
+                                           }
 
 binaryExpression:
     | expression PLUS expression   { 
@@ -171,6 +317,7 @@ binaryExpression:
                                    }
     | expression SUB expression    { Sub($1, $3)  }
     | expression MUL expression    { Mul($1, $3)  }
+    | expression TIMES expression  { Mul($1, $3)  }
     | expression DIV expression    { Div($1, $3)  }
     | expression BMOD expression   { Bmod($1, $3) }
 	| SUB expression %prec uMinus  { Neg($2) }
@@ -183,17 +330,17 @@ binaryExpression:
                                        report parseState "Second operand" 
                                        Plus($1, $1)
                                    }
-    | expression expr   %prec expressionOverAll { 
+    | expression recover expression %prec expressionOverAll   { 
+                            //let lexeme, sPos, ePos, exVal = $3
+                            //let errorMsg = "MAYBE missing binary operator????"
+                            //let error = Error(errorMsg, {Line = sPos; Column = ePos})
+                            //errorLogger.ReportError(error)
+                            report parseState "MAYBE missing binary operator????"
+                            Plus($1, $3)
+                         }
+    | expression expr   %prec errorRule { 
                             let lexeme, sPos, ePos, exVal = $2
                             let errorMsg = "MAYBE missing binary operator?"
-                            let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                            errorLogger.ReportError(error)
-                            
-                            Plus($1, exVal)
-                         }
-    | expression sym expr   %prec expressionOverAll { 
-                            let lexeme, sPos, ePos, exVal = $3
-                            let errorMsg = "MAYBE missing binary operator????"
                             let error = Error(errorMsg, {Line = sPos; Column = ePos})
                             errorLogger.ReportError(error)
                             
@@ -212,18 +359,28 @@ binaryOperator:
     | DIV  %prec errorRule {}
     | BMOD %prec errorRule {}
 
+arguments:
+    | parens argumentSet parens %prec funcPriority  { 
+                                  checkBalancedParen $1 $3 ParenToken.LCURLY ParenToken.RCURLY parseState
+                                  Some($2) 
+                                }
+    | parens parens             {
+                                  checkBalancedParen $1 $2 ParenToken.LCURLY ParenToken.RCURLY parseState
+                                  None 
+                                }
+
 argumentSet:
-    | expression %prec argSetPriority  { 
-                                           let a = 1
-                                           //report parseState "argPassed"
-                                           [$1]
+    | expression %prec argSetPriority     { 
+                                            let a = 1
+                                            //report parseState "argPassed"
+                                            [$1]
                                           }
-	| argumentSet COMMA expression { 
+	| argumentSet COMMA expression %prec argSetPriority { 
                                      //report parseState "argPassed"
                                      $3::$1 
                                    }
 	//
-	| argumentSet error expression %prec expressionOverAll1 {
+	| argumentSet error expression %prec errorRule {
                                        let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                                        let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (new String(lexbuf.Lexeme))
                                        let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
@@ -231,7 +388,7 @@ argumentSet:
                                        
                                        $3::$1
                                    }
-    | argumentSet expr %prec expressionOverAll1 {
+    | argumentSet expr %prec errorRule {
                                        let lexeme, sPos, ePos, exVal = $2
                                        let errorMsg = "Expected comma symbol"
                                        let error = Error(errorMsg, {Line = sPos; Column = ePos})
@@ -241,7 +398,7 @@ argumentSet:
                                    }
 
 expr:
-    | expression %prec expressionOverAll1 {
+    | expression %prec errorRule {
                      let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                      let posis = parseState.GetInput(1)
                      let posix = parseState.InputStartPosition(1)
@@ -254,116 +411,22 @@ recover:
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
              }
 
-//symbol:
-//    | CARET  { Some(CARET) }
-//	| LCURLY { Some(LCURLY) }
-//	| RCURLY { Some(RCURLY) }
-//	| LPAREN { Some(LPAREN) }
-//	| RPAREN { Some(RPAREN) }
-//	| error %prec missingSymbol { None }
-
-lCurly:
-    | LCURLY    { LCURLY }
-	| recover   { 
-                  report parseState "Left curly brace" 
-                  LCURLY 
-                }
- 
-rCurly:
-    | RCURLY  { Some(RCURLY) }
-	| recover %prec errorRule  { 
-                                   report parseState "Right curly brace" 
-                                   None
-                               }
-
-lParen:
-    | LPAREN  { LPAREN }
-    | recover   { 
-                  report parseState "Left paren" 
-                  LPAREN 
-                }
-
-rParen:
-    | RPAREN  { Some(RPAREN) }
-    | recover %prec errorRule  { 
-                  report parseState "Right paren" 
-                  None
-                }
-
-caret:
-    | CARET { CARET }
-    | recover {
-                  report parseState "MISSING CARET"
-                  CARET
-              }
-
-funcSyntaxError:
-    | SLASH recover lCurly argumentSet rCurly %prec errorRule    { 
-                                                                   let wrongLexeme, sPos, ePos = $2
-                                                                   let errorMsg = sprintf "Unexpected symbol: %s. Required SUM op" wrongLexeme
-                                                                   let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                                                                   errorLogger.ReportError(error)
-                                                                   Sum(List.rev $4) 
-                                                                 }
-    | SLASH SUM lCurly rCurly %prec errorRule {
-                                   report parseState "SUM should have parameters"
-                                   Sum([Int(1)])
-                               }
-	| error SUM lCurly argumentSet rCurly %prec expressionOverAll1    { 
-                                                                report parseState "SUM operation should starts with SLASH"
-                                                                Sum(List.rev $4)
-                                                             }
-    | expression LCURLY argumentSet rCurly %prec expressionOverAll {
-                                             let pos = parseState.InputStartPosition(2)
-                                             let posis = parseState.GetInput(2)
-                                             let posis1 = parseState.GetInput(1)
-                                             let posis2 = parseState.InputStartPosition(1)
-                                             let posis3 = parseState.InputEndPosition(1)
-                                             let errorMsg = "Unexpected left curly brace expression"
-                                             let error = Error(errorMsg, {Line = pos.Line; Column = pos.Column})
-                                             errorLogger.ReportError(error)
-                                             Sum(List.rev $3)
-                                         }
-    | LCURLY expression rCurly lCurly expression rCurly    %prec expressionOverAll         { 
-                                                                             report parseState "MISSING CARET111"
-                                                                             Pow($2, $5) 
-                                                                          }
-    | expression CARET lCurly expression rCurly  { 
-                                                 report parseState "Right curly unmatched"
-                                                 Pow(Int(1), $4) 
-                                             }
+parens:
+    | LPAREN  { ParenToken.LPAREN }
+    | RPAREN  { ParenToken.RPAREN }
+    | LCURLY  { ParenToken.LCURLY }
+    | RCURLY  { ParenToken.RCURLY }
 
 parenError:
-   // | expression RCURLY %prec rparen_error {
-    | LCURLY expression rCurly %prec loose_closing_paren {
-                                                           report parseState "LCURLY RCURLY expression"
-                                                           $2
-                                                         }
-    | expression rCurly %prec loose_closing_paren {
-                            if isSome $2 then report parseState "Unexpected RCURLY"
-                            //match $2 with
-                            //    | Some(RCURLY) -> report parseState "Unexpected RCURLY"
-                            //    | _ -> report parseState "Unexpected SYMBOLLLL"
-                            
-                            $1
-                        }
-    | expression rParen %prec loose_closing_paren {
-                            if isSome $2 then report parseState "Unexpected RPAREN"
-                            $1
-                         }
-    | LPAREN expression %prec loose_closing_paren  {
-                             report parseState "LPAREN WITHOUT RPAREN"
-                             $2
-                         }
-    | LCURLY expression %prec loose_closing_paren  {
-                             report parseState "LCURLY WITHOUT RCURLY"
-                             $2
-                         }
-
-//    | argumentSet %prec loose_closing_paren {
-//                                              
-//                                            
-//                                            
-//                                            }
-
-
+    | arguments  %prec loose_closing_paren  {
+                                              report parseState "LCURLY RCURLY expression"
+                                              match $1 with | Some(x) -> x.Head | None -> Int(1)
+                                            }
+    | expression parens %prec loose_closing_paren {
+                         report parseState (sprintf "Unmatched right %s" ($2.ToString()))
+                         $1
+                       }
+	| parens expression %prec loose_closing_paren {
+                                                    report parseState (sprintf "Unmatched left %s" ($1.ToString()))
+                                                    $2
+                                                  }
