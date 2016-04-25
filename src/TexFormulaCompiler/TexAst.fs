@@ -1,5 +1,7 @@
 ﻿module TexAst
 
+open Microsoft.FSharp.Reflection
+
 exception DomainSpecificParseException of string * int
 
 type Constant = 
@@ -35,3 +37,24 @@ type Expr =
     | Lim of Expr * string * Expr  // function x limitVariable x approximationValue
     | DsAst of DomainSpecificAst
     | Neg of Expr
+
+let toString(t: 'a) = let case, _ = FSharpValue.GetUnionFields(t, typeof<'a>) in case.Name
+
+type TokenInternal = 
+    | FRAC
+    | SQRT
+    | SUM
+    | PROD
+    | INTEGRAL
+    | SIN
+    | COS
+    | POW
+    | BINARY
+    override this.ToString() = toString(this)
+
+type ParenToken = 
+    | LPAREN
+    | RPAREN
+    | LCURLY
+    | RCURLY
+    override this.ToString() = toString(this)

@@ -6,23 +6,6 @@ open Microsoft.FSharp.Text.Lexing
 open Microsoft.FSharp.Text.Parsing
 open ErrorHandling
 
-type TokenInternal = 
-    | FRAC
-    | SQRT
-    | SUM
-    | PROD
-    | INTEGRAL
-    | SIN
-    | COS
-    | POW
-    | BINARY
-
-type ParenToken = 
-    | LPAREN
-    | RPAREN
-    | LCURLY
-    | RCURLY
-
 let mutable domainSpecificAnalyzer = Unchecked.defaultof<DomainSpecificContext -> obj>
 let mutable errorLogger = Unchecked.defaultof<ErrorLogger>
 
@@ -56,6 +39,10 @@ let report (parseState : IParseState) sym =
     let errorMsg = sprintf "Unexpected symbol: %s. %s symbol required" (new String(lexbuf.Lexeme)) sym
     let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
     errorLogger.ReportError(error)
+
+let report msg pos = 
+    let error = Error(msg, pos)
+	errorLogger.ReportError(error)
 
 let checkForArguments token argsOpt parseState =
     match (token, argsOpt) with
@@ -98,7 +85,6 @@ let checkBalancedParen actualLp actualRp expectedLp expectedRp parseState =
 
 %left errorRule
 %left errorRule1
-//%left loose_closing_paren
 %left recoverRule
 %left missingSymbol
 %right intError
@@ -154,16 +140,13 @@ sum:
             Sum([Int(1)])
           }
 
-noname:
-    | error    { report parseState "unexpected NAME"}
-
 prod:
     | SLASH PROD arguments  { 
                               let args = checkForArguments TokenInternal.PROD $3 parseState
                               Prod(List.rev args) 
                             }
 	| PROD arguments        {
-                              report parseState "SUM operation should starts with SLASH"
+                              report parseState "PROD operation should starts with SLASH"
                               let args = checkForArguments TokenInternal.PROD $2 parseState
                               Prod(List.rev args) 
                             }
@@ -185,12 +168,12 @@ power:
                                    let arg2 = checkForArgument TokenInternal.POW $3 parseState
                                    Pow(arg1, arg2) 
                                  }
-   // | arguments arguments        { 
-   //                                let arg1 = checkForArgument TokenInternal.POW $1 parseState
-   //                                let arg2 = checkForArgument TokenInternal.POW $2 parseState
-   //                                report parseState "MISSING CARET!!111223232"
-   //                                Pow(arg1, arg2) 
-   //                              }
+    //| arguments arguments        { 
+    //                               let arg1 = checkForArgument TokenInternal.POW $1 parseState
+    //                               let arg2 = checkForArgument TokenInternal.POW $2 parseState
+    //                               report parseState "MISSING CARET!!111223232"
+    //                               Pow(arg1, arg2) 
+    //                             }
 
 frac:
     | SLASH FRAC arguments arguments   { 
@@ -219,7 +202,7 @@ frac:
 
 integralPrefix:
     | SLASH INTEGRAL {}
-    | INTEGRAL { report parseState "INTEGRAP op should start with SLASH" }
+    | INTEGRAL { report parseState "INTEGRAL op should start with SLASH" }
 
 integral:
     | integralPrefix intUnderscore arguments intCaret arguments arguments intDiff { 
@@ -270,9 +253,12 @@ highPriorityFunction:
     | frac                       { $1 }
 	//| limit                    { $1 }
 	| refPattern                 { $1 }
-	| ID                         { Var($1) }
+	| ID                         { 
+                                   let a = 1
+                                   Var($1) 
+                                 }
     //| funcSyntaxError          { $1 }
-    | parenError                 { $1 }
+    | errorRule                  { $1 }
 
 	
 sinPrefix:
@@ -347,11 +333,6 @@ binaryExpression:
                             Plus($1, exVal)
                          }
 
-sym:
-   | COMMA {}
-   | CARET {}
-
-
 binaryOperator:
     | PLUS %prec errorRule {}
     | SUB  %prec errorRule {}
@@ -370,15 +351,8 @@ arguments:
                                 }
 
 argumentSet:
-    | expression %prec argSetPriority     { 
-                                            let a = 1
-                                            //report parseState "argPassed"
-                                            [$1]
-                                          }
-	| argumentSet COMMA expression %prec argSetPriority { 
-                                     //report parseState "argPassed"
-                                     $3::$1 
-                                   }
+    | expression %prec argSetPriority     { [$1] }
+	| argumentSet COMMA expression %prec argSetPriority { $3::$1 }
 	//
 	| argumentSet error expression %prec errorRule {
                                        let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
@@ -406,6 +380,7 @@ expr:
                  }
 
 recover: 
+    //| error %prec recoverRule { 
     | error %prec recoverRule { 
                  let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
@@ -417,7 +392,25 @@ parens:
     | LCURLY  { ParenToken.LCURLY }
     | RCURLY  { ParenToken.RCURLY }
 
-parenError:
+errorRule:
+    | SLASH ID arguments %prec loose_closing_paren      {
+                                                          report parseState (sprintf "Undefined function %s" $2)
+                                                          Int(1)
+                                                        }
+    | SLASH ID %prec loose_closing_paren      {
+                                                report parseState (sprintf "Undefined function %s" $2)
+                                                Int(1)
+                                              }
+    | SLASH recover arguments %prec loose_closing_paren {
+                                                let lexeme, sPos, ePos = $2
+                                                report parseState (sprintf "Undefined function %s" lexeme)
+                                                Int(1)
+                                              }
+    | SLASH recover %prec loose_closing_paren {
+                                                let lexeme, sPos, ePos = $2
+                                                report parseState (sprintf "Undefined function %s" lexeme)
+                                                Int(1)
+                                              }
     | arguments  %prec loose_closing_paren  {
                                               report parseState "LCURLY RCURLY expression"
                                               match $1 with | Some(x) -> x.Head | None -> Int(1)

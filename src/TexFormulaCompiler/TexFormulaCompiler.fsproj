@@ -82,6 +82,7 @@
     </FsLex>
     <Compile Include="ErrorLogger.fs" />
     <Compile Include="TexAst.fs" />
+    <Compile Include="ErrorTextFormatter.fs" />
     <Compile Include="TexParser.fs" />
     <Compile Include="TexLexer.fs" />
     <FsYacc Include="DomainSpecific\DsParser.fsy">

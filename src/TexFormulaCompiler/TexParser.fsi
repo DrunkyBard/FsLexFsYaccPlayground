@@ -82,7 +82,6 @@ type nonTerminalId =
     | NONTERM_expression
     | NONTERM_constant
     | NONTERM_sum
-    | NONTERM_noname
     | NONTERM_prod
     | NONTERM_fact
     | NONTERM_power
@@ -99,14 +98,13 @@ type nonTerminalId =
     | NONTERM_cosPrefix
     | NONTERM_trigonometry
     | NONTERM_binaryExpression
-    | NONTERM_sym
     | NONTERM_binaryOperator
     | NONTERM_arguments
     | NONTERM_argumentSet
     | NONTERM_expr
     | NONTERM_recover
     | NONTERM_parens
-    | NONTERM_parenError
+    | NONTERM_errorRule
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

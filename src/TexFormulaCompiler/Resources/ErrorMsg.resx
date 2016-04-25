@@ -117,7 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="String1" xml:space="preserve">
-    <value>23</value>
+  <data name="FracMissingSecondArg" xml:space="preserve">
+    <value>FRAC function should have second argument. For example '\FRAC{1}{2}'.</value>
+  </data>
+  <data name="FunctionShouldHaveAtLeastOneParameter" xml:space="preserve">
+    <value>{0} function should have at least one parameter.</value>
+  </data>
+  <data name="FunctionShouldHaveOnlyOneParameter" xml:space="preserve">
+    <value>{0} function should have only one parameter.</value>
+  </data>
+  <data name="InvalidLRBracketExpr" xml:space="preserve">
+    <value>Invalid curly braced expression.</value>
+  </data>
+  <data name="MaybeMissingOps" xml:space="preserve">
+    <value>Two expression detected. Maybe missing binary operation?</value>
+  </data>
+  <data name="MissingCaret" xml:space="preserve">
+    <value>Missing '^' symbol.</value>
+  </data>
+  <data name="MissingComma" xml:space="preserve">
+    <value>Missing comma symbol.</value>
+  </data>
+  <data name="MissingDiff" xml:space="preserve">
+    <value>INTEGRAL function should have differential variable. For example: '\INT_{1}^{2}{x} d{x}'.</value>
+  </data>
+  <data name="MissingFirstOp" xml:space="preserve">
+    <value>First operand required for binary operation.</value>
+  </data>
+  <data name="MissingSecondOp" xml:space="preserve">
+    <value>Second operand required for binary operation.</value>
+  </data>
+  <data name="MissingSlash" xml:space="preserve">
+    <value>{0} function should starts with '\' symbol.</value>
+  </data>
+  <data name="MissingUnderscore" xml:space="preserve">
+    <value>Missing '_' symbol.</value>
+  </data>
+  <data name="SeveralArgumentsDetected" xml:space="preserve">
+    <value>Several arguments detected. {0} function should have only one parameter.</value>
+  </data>
+  <data name="UnexpectedFunc" xml:space="preserve">
+    <value>Unexpected function name: '{0}'.</value>
+  </data>
+  <data name="UnmatchedLBracket" xml:space="preserve">
+    <value>Unmatched left '{0}' bracket.</value>
+  </data>
+  <data name="UnmatchedRBracket" xml:space="preserve">
+    <value>Unmatched right '{0}' bracket.</value>
   </data>
 </root>
