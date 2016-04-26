@@ -21,8 +21,6 @@ type token =
   | SUB
   | MUL
   | DIV
-  | LSQBRACE
-  | RSQBRACE
   | LPAREN
   | RPAREN
   | LCURLY
@@ -33,10 +31,6 @@ type token =
   | UNDERSCORE
   | SLASH
   | COMMA
-  | LSREFBRACKET
-  | RSREFBRACKET
-  | LMREFBRACKET
-  | RMREFBRACKET
   | MREFVAL of ((string*int) list)
   | SREFVAL of (string*int)
   | ID of (string)
@@ -64,8 +58,6 @@ type tokenId =
     | TOKEN_SUB
     | TOKEN_MUL
     | TOKEN_DIV
-    | TOKEN_LSQBRACE
-    | TOKEN_RSQBRACE
     | TOKEN_LPAREN
     | TOKEN_RPAREN
     | TOKEN_LCURLY
@@ -76,10 +68,6 @@ type tokenId =
     | TOKEN_UNDERSCORE
     | TOKEN_SLASH
     | TOKEN_COMMA
-    | TOKEN_LSREFBRACKET
-    | TOKEN_RSREFBRACKET
-    | TOKEN_LMREFBRACKET
-    | TOKEN_RMREFBRACKET
     | TOKEN_MREFVAL
     | TOKEN_SREFVAL
     | TOKEN_ID
@@ -93,19 +81,33 @@ type nonTerminalId =
     | NONTERM_start
     | NONTERM_expression
     | NONTERM_constant
+    | NONTERM_sumPrefix
     | NONTERM_sum
+    | NONTERM_prodPrefix
     | NONTERM_prod
     | NONTERM_fact
-    | NONTERM_frac
     | NONTERM_power
+    | NONTERM_fracPrefix
+    | NONTERM_frac
+    | NONTERM_integralPrefix
     | NONTERM_integral
-    | NONTERM_limit
+    | NONTERM_intDiff
+    | NONTERM_intCaret
+    | NONTERM_intUnderscore
     | NONTERM_refPattern
-    | NONTERM_trigonometry
     | NONTERM_refValue
     | NONTERM_highPriorityFunction
+    | NONTERM_sinPrefix
+    | NONTERM_cosPrefix
+    | NONTERM_trigonometry
     | NONTERM_binaryExpression
+    | NONTERM_binaryOperator
+    | NONTERM_arguments
     | NONTERM_argumentSet
+    | NONTERM_expr
+    | NONTERM_recover
+    | NONTERM_parens
+    | NONTERM_errorRule
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 
