@@ -92,9 +92,7 @@ let getEndPosition (parseState: IParseState) position =
 %token EOF
 
 %left errorRule
-%left errorRule1
 %left recoverRule
-%left missingSymbol
 %right intError
 %left SLASH
 %left RCURLY RPAREN COMMA 
@@ -105,10 +103,7 @@ let getEndPosition (parseState: IParseState) position =
 %left PLUS SUB
 %left DIV MUL BMOD TIMES funcPriority 
 %right EXCL CARET
-%left funcSyntaxError
 %left uMinus
-%left unexpectedEnumeration
-%left expressionOverAll1
 %left expressionOverAll
 
 %start start
