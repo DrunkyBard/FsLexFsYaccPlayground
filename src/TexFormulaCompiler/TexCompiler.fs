@@ -14,6 +14,9 @@ type TexCompiler(domainSpecificAnalyzer: DomainSpecificContext -> obj, dslSValue
         TexParser.errorLogger <- errorLogger
         let lexbuf = LexBuffer<char>.FromString src
         let texCodeGen = TexCodeGenerator(dslSValueInterpreter, dslMValueInterpreter)
-
         let ast = (TexLexer.lex, lexbuf) ||> TexParser.start
-        ast |> texCodeGen.Generate
+
+        if errorLogger.HasErrors then 
+            errorLogger.Flush()
+            None
+        else Some(ast |> texCodeGen.Generate)

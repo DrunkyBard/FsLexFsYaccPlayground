@@ -5,7 +5,7 @@ open TexAst
 
 type ResX = FSharp.Configuration.ResXProvider<file="Resources/ErrorMsg.resx">
 
-type ErrorTextFormetter = 
+type ErrorTextFormatter = 
     static member FunctionHasNoParameters token = 
         match token with
             | SUM | PROD -> String.Format(ResX.ErrorMsg.FunctionShouldHaveAtLeastOneParameter, token.ToString())
@@ -33,8 +33,8 @@ type ErrorTextFormetter =
 
     static member MaybeMissingBinaryOperator = ResX.ErrorMsg.MaybeMissingOps
 
-    static member MissingCommaSymbol = ResX.ErrorMsg.MissingComma
-
-    static member UnexpectedFunctionName funcName = String.Format(ResX.ErrorMsg.UnexpectedFunc, funcName)
+    static member UnexpectedFunctionName (funcName: string) = String.Format(ResX.ErrorMsg.UnexpectedFunc, funcName)
 
     static member InvalidLRBracketExpression = ResX.ErrorMsg.InvalidLRBracketExpr
+
+    static member UnexpectedSlash = ResX.ErrorMsg.UnexpectedSlash

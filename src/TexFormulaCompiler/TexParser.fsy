@@ -20,10 +20,6 @@ let analyzeDomainSpecificSource token startPos =
 let analyzeDomainSpecificSingleSource src pos = 
     analyzeDomainSpecificSource (SRefValueSrc(src)) pos |> SRefValue
 
-let isSome = function
-    | Some(_) -> true
-    | None -> false
-
 let analyzeDomainSpecificSources sources = 
     let rec analyzeDomainSpecificSourcesInternal sources state = 
         match sources with
@@ -34,40 +30,52 @@ let analyzeDomainSpecificSources sources =
     |> List.rev 
     |> MRefValue
 
-let report (parseState : IParseState) sym = 
-    let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-    let errorMsg = sprintf "Unexpected symbol: %s. %s symbol required" (new String(lexbuf.Lexeme)) sym
-    let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
-    errorLogger.ReportError(error)
-
 let report msg pos = 
     let error = Error(msg, pos)
-	errorLogger.ReportError(error)
+    errorLogger.ReportError(error)
 
-let checkForArguments token argsOpt parseState =
+let checkForArguments token argsOpt pos =
     match (token, argsOpt) with
-        | (_, None) -> report parseState "SOME should have parameters"; [Int(1)]
+        | (_, None) -> 
+                       (ErrorTextFormatter.FunctionHasNoParameters token, pos) ||> report
+                       [Int(1)]
         | (_, Some(args)) -> 
                              Debug.Assert((Seq.length args) <> 0)
                              match (token, Seq.length args) with
                                  | (SUM, _) | (PROD, _) -> args
-                                 | (_, l) when l > 1 -> report parseState "SOME should have only one arg"; [args.Head]
+                                 | (_, l) when l > 1 -> 
+                                                        (ErrorTextFormatter.FunctionHasSeveralParameters token, pos) ||> report
+                                                        [args.Head]
                                  | (_, _) -> args
 
-let checkForArgument token argsOpt parseState = checkForArguments token argsOpt parseState |> Seq.head
+let checkForArgument token argsOpt pos = checkForArguments token argsOpt pos |> Seq.head
 
 let (|UnmatchedLeft|UnmatchedRight|UnmatchedBoth|MatchedBoth|) (actualLp, actualRp, expectedLp, expectedRp) = 
+    let actualLp = fst actualLp
+    let actualRp = fst actualRp
     if actualLp <> expectedLp && actualRp <> expectedRp then UnmatchedBoth
     elif actualLp <> expectedLp then UnmatchedLeft
     elif actualRp <> expectedRp then UnmatchedRight
     else MatchedBoth
 
-let checkBalancedParen actualLp actualRp expectedLp expectedRp parseState = 
+let checkBalancedParen actualLp actualRp expectedLp expectedRp = 
     match (actualLp, actualRp, expectedLp, expectedRp) with
-        | UnmatchedLeft   -> report parseState "Unmatched left"
-        | UnmatchedRight  -> report parseState "Unmatched right"
-        | UnmatchedBoth   -> report parseState "Unmatched both"
+        | UnmatchedLeft   -> (ErrorTextFormatter.UnmatchedLeftBracket (fst actualLp), snd actualLp) ||> report
+        | UnmatchedRight  -> (ErrorTextFormatter.UnmatchedRightBracket (fst actualRp), snd actualRp) ||> report
+        | UnmatchedBoth   -> 
+                              (ErrorTextFormatter.UnmatchedLeftBracket (fst actualLp), snd actualLp) ||> report
+                              (ErrorTextFormatter.UnmatchedRightBracket (fst actualRp), snd actualRp) ||> report
         | MatchedBoth     -> ()
+
+let getStartPosition (parseState: IParseState) position = 
+    let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+    let pos = parseState.InputStartPosition(position)
+    {Line = pos.Line; Column = pos.Column}
+
+let getEndPosition (parseState: IParseState) position = 
+    let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
+    let pos = parseState.InputEndPosition(position)
+    {Line = pos.Line; Column = pos.Column}
 
 %}
 
@@ -91,8 +99,8 @@ let checkBalancedParen actualLp actualRp expectedLp expectedRp parseState =
 %left SLASH
 %left RCURLY RPAREN COMMA 
 %left argSetPriority
-%right LCURLY LPAREN loose_closing_paren
-%left INT EULERNUM PI
+%right LCURLY LPAREN loose_closing_paren errRule
+%left INT FLOAT EULERNUM PI 
 %left ID
 %left PLUS SUB
 %left DIV MUL BMOD TIMES funcPriority 
@@ -121,42 +129,32 @@ constant:
 	| PI       { Constant(Pi) }
 	| EULERNUM { Constant(E) }
 
+sumPrefix:
+    | SLASH SUM {}
+    | SUM       { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.SUM, getStartPosition parseState 1) ||> report }
+
 sum:
-    | SLASH SUM arguments  {
-                             let args = checkForArguments TokenInternal.SUM $3 parseState
+    | sumPrefix arguments  {
+                             let args = checkForArguments TokenInternal.SUM $2 (getStartPosition parseState 2)
                              Sum(List.rev args)
                            }
-    | SUM arguments        {
-                               report parseState "SUM operation should starts with SLASH"
-                               let args = checkForArguments TokenInternal.SUM $2 parseState
-                               Sum(List.rev args)
-                           }
-    | SUM {
-            report parseState "SUM HAS NO args"
-            Sum([Int(1)])
-          }
-    | SLASH SUM {
-            report parseState "SUM HAS NO args"
+    | sumPrefix {
+            (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.SUM, getEndPosition parseState 1) ||> report
             Sum([Int(1)])
           }
 
+prodPrefix:
+    | SLASH PROD {}
+    | PROD       { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.PROD, getStartPosition parseState 1) ||> report }
+
 prod:
-    | SLASH PROD arguments  { 
-                              let args = checkForArguments TokenInternal.PROD $3 parseState
+    | prodPrefix arguments  { 
+                              let args = checkForArguments TokenInternal.PROD $2 (getStartPosition parseState 2)
                               Prod(List.rev args) 
                             }
-	| PROD arguments        {
-                              report parseState "PROD operation should starts with SLASH"
-                              let args = checkForArguments TokenInternal.PROD $2 parseState
-                              Prod(List.rev args) 
-                            }
-    | PROD                  {
-                              report parseState "PROD HAS NO args"
-                              Sum([Int(1)])
-                            }
-    | SLASH PROD            {
-                              report parseState "PROD HAS NO args"
-                              Sum([Int(1)])
+    | prodPrefix            {
+                              (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.PROD, getEndPosition parseState 1) ||> report
+                              Prod([Int(1)])
                             }
 
 fact:
@@ -164,68 +162,61 @@ fact:
 
 power:
     | arguments intCaret arguments  { 
-                                   let arg1 = checkForArgument TokenInternal.POW $1 parseState
-                                   let arg2 = checkForArgument TokenInternal.POW $3 parseState
+                                   let arg1 = checkForArgument TokenInternal.POW $1 (getStartPosition parseState 1)
+                                   let arg2 = checkForArgument TokenInternal.POW $3 (getStartPosition parseState 3)
                                    Pow(arg1, arg2) 
                                  }
-    //| arguments arguments        { 
-    //                               let arg1 = checkForArgument TokenInternal.POW $1 parseState
-    //                               let arg2 = checkForArgument TokenInternal.POW $2 parseState
-    //                               report parseState "MISSING CARET!!111223232"
-    //                               Pow(arg1, arg2) 
-    //                             }
+
+fracPrefix:
+    | SLASH FRAC {}
+    | FRAC       { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.FRAC, getStartPosition parseState 1) ||> report }
 
 frac:
-    | SLASH FRAC arguments arguments   { 
-                                         let arg1 = checkForArgument TokenInternal.FRAC $3 parseState
-                                         let arg2 = checkForArgument TokenInternal.FRAC $4 parseState
+    | fracPrefix arguments arguments   { 
+                                         let arg1 = checkForArgument TokenInternal.FRAC $2 (getStartPosition parseState 2)
+                                         let arg2 = checkForArgument TokenInternal.FRAC $3 (getStartPosition parseState 3)
                                          Div(arg1, arg2) 
                                        }
-	| SLASH FRAC arguments error       {
-                                         let arg = checkForArgument TokenInternal.FRAC $3 parseState
-                                         report parseState "FRAC Missing second arg!"
+	| fracPrefix arguments error       {
+                                         let arg = checkForArgument TokenInternal.FRAC $2 (getStartPosition parseState 2)
+                                         (ErrorTextFormatter.FracMissingSecondArg, getEndPosition parseState 2) ||> report
                                          Div(arg, Int(1))
                                        }
-    | FRAC arguments                   {
-                                         let arg = checkForArgument TokenInternal.FRAC $2 parseState
-                                         report parseState "FRAC Missing second arg"
+    | fracPrefix arguments             {
+                                         let arg = checkForArgument TokenInternal.FRAC $2 (getStartPosition parseState 2)
+                                         (ErrorTextFormatter.FracMissingSecondArg, getEndPosition parseState 2) ||> report
                                          Div(arg, Int(1))
                                        }
-	| FRAC                             {
-                                         report parseState "FRAC HAS NO args"
-                                         Div(Int(1), Int(1))
-                                       }
-	| SLASH FRAC                       {
-                                         report parseState "FRAC HAS NO args"
+	| fracPrefix                       {
+                                         (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.FRAC, getEndPosition parseState 1) ||> report
                                          Div(Int(1), Int(1))
                                        }
 
 integralPrefix:
     | SLASH INTEGRAL {}
-    | INTEGRAL { report parseState "INTEGRAL op should start with SLASH" }
+    | INTEGRAL { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.INTEGRAL, getStartPosition parseState 1) ||> report }
 
 integral:
     | integralPrefix intUnderscore arguments intCaret arguments arguments intDiff { 
-                      let arg1 = checkForArgument TokenInternal.INTEGRAL $6 parseState
-                      let arg2 = checkForArgument TokenInternal.INTEGRAL $3 parseState
-                      let arg3 = checkForArgument TokenInternal.INTEGRAL $5 parseState
-                      //report parseState "INTEGRAL MISSING caret"
+                      let arg1 = checkForArgument TokenInternal.INTEGRAL $6 (getStartPosition parseState 6)
+                      let arg2 = checkForArgument TokenInternal.INTEGRAL $3 (getStartPosition parseState 3)
+                      let arg3 = checkForArgument TokenInternal.INTEGRAL $5 (getStartPosition parseState 5)
                       Integral(arg1, $7, arg2, arg3) 
                     }
 
 intDiff:
     | DIFF { $1 }
     |      { 
-             report parseState "INTEGRAL DIFF missing"
+             (ErrorTextFormatter.MissingDiffSyntax, getStartPosition parseState 1) ||> report
              "x"
            }
 
 intCaret:
     | CARET {}
-    | error %prec intError { report parseState "INTEGER CARET missing"}
+    | error %prec intError { (ErrorTextFormatter.MissingCaretSymbol, getStartPosition parseState 1) ||> report }
 intUnderscore:
     | UNDERSCORE {}
-    | error %prec intError { report parseState "INTEGER UNDERSCORE missing"}
+    | error %prec intError { (ErrorTextFormatter.MissingUnderscoreSymbol, getStartPosition parseState 1) ||> report }
 
 //limit:
 //    SLASH LIM UNDERSCORE lCurly ID TO expression rCurly lCurly expression rCurly  { Lim($10, $5, $7) }
@@ -253,82 +244,69 @@ highPriorityFunction:
     | frac                       { $1 }
 	//| limit                    { $1 }
 	| refPattern                 { $1 }
-	| ID                         { 
-                                   let a = 1
-                                   Var($1) 
-                                 }
-    //| funcSyntaxError          { $1 }
+	| ID                         { Var($1) }
     | errorRule                  { $1 }
 
 	
 sinPrefix:
     | SLASH SIN {}
-    | SIN       { report parseState "SIN OP should starts with SLASH symbol"}
+    | SIN       { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.SIN, getStartPosition parseState 1) ||> report }
 
 cosPrefix:
     | SLASH COS {}
-    | COS       { report parseState "COS OP should starts with SLASH symbol"}
+    | COS       { (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.COS, getStartPosition parseState 1) ||> report }
 
 trigonometry: 
 	| sinPrefix arguments                  { 
-                                             let arg = checkForArgument TokenInternal.SIN $2 parseState
+                                             let arg = checkForArgument TokenInternal.SIN $2 (getStartPosition parseState 2)
                                              Sin(arg, Int(1)) 
                                            }
     | sinPrefix CARET arguments arguments  { 
-                                             let arg1 = checkForArgument TokenInternal.SIN $3 parseState
-                                             let arg2 = checkForArgument TokenInternal.SIN $4 parseState
+                                             let arg1 = checkForArgument TokenInternal.SIN $3 (getStartPosition parseState 3)
+                                             let arg2 = checkForArgument TokenInternal.SIN $4 (getStartPosition parseState 4)
                                              Sin(arg1, arg2)
                                            }
     | sinPrefix arguments arguments        { 
-                                             report parseState "CARET symbol for SIN missing"
-                                             let arg1 = checkForArgument TokenInternal.SIN $2 parseState
-                                             let arg2 = checkForArgument TokenInternal.SIN $3 parseState
+                                             (ErrorTextFormatter.MissingCaretSymbol, getEndPosition parseState 1) ||> report
+                                             let arg1 = checkForArgument TokenInternal.SIN $2 (getStartPosition parseState 2)
+                                             let arg2 = checkForArgument TokenInternal.SIN $3 (getStartPosition parseState 3)
                                              Sin(arg1, arg2)
                                            }
     | cosPrefix arguments                  { 
-                                             let arg = checkForArgument TokenInternal.COS $2 parseState
+                                             let arg = checkForArgument TokenInternal.COS $2 (getStartPosition parseState 2)
                                              Cos(arg, Int(1))
                                            }
     | cosPrefix CARET arguments arguments  { 
-                                             report parseState "CARET symbol for COS missing"
-                                             let arg1 = checkForArgument TokenInternal.COS $3 parseState
-                                             let arg2 = checkForArgument TokenInternal.COS $4 parseState
+                                             (ErrorTextFormatter.MissingCaretSymbol, getEndPosition parseState 1) ||> report
+                                             let arg1 = checkForArgument TokenInternal.COS $3 (getStartPosition parseState 3)
+                                             let arg2 = checkForArgument TokenInternal.COS $4 (getStartPosition parseState 4)
                                              Cos(arg1, arg2)
                                            }
 
 binaryExpression:
-    | expression PLUS expression   { 
-                                     let p = 1
-                                     Plus($1, $3)
-                                   }
+    | expression PLUS expression   { Plus($1, $3) }
     | expression SUB expression    { Sub($1, $3)  }
     | expression MUL expression    { Mul($1, $3)  }
     | expression TIMES expression  { Mul($1, $3)  }
     | expression DIV expression    { Div($1, $3)  }
     | expression BMOD expression   { Bmod($1, $3) }
-	| SUB expression %prec uMinus  { Neg($2) }
+	| SUB expression %prec uMinus  {   Neg($2)    }
 	//
-	| binaryOperator expression %prec errorRule   { 
-                                       report parseState "First operand" 
+	| binaryOperator expression %prec errRule   { 
+                                       (ErrorTextFormatter.MissingFirstOperand, getStartPosition parseState 1) ||> report
                                        Plus($2, $2)
                                    }
-    | expression binaryOperator %prec errorRule   { 
-                                       report parseState "Second operand" 
+    | expression binaryOperator %prec errRule   { 
+                                       (ErrorTextFormatter.MissingSecondOperand, getEndPosition parseState 2) ||> report
                                        Plus($1, $1)
                                    }
-    | expression recover expression %prec expressionOverAll   { 
-                            //let lexeme, sPos, ePos, exVal = $3
-                            //let errorMsg = "MAYBE missing binary operator????"
-                            //let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                            //errorLogger.ReportError(error)
-                            report parseState "MAYBE missing binary operator????"
+    | expression recover expression %prec errRule   { 
+                            (ErrorTextFormatter.MaybeMissingBinaryOperator, getStartPosition parseState 2) ||> report
                             Plus($1, $3)
                          }
-    | expression expr   %prec errorRule { 
+    | expression expr   %prec errRule { 
                             let lexeme, sPos, ePos, exVal = $2
-                            let errorMsg = "MAYBE missing binary operator?"
-                            let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                            errorLogger.ReportError(error)
+                            (ErrorTextFormatter.MaybeMissingBinaryOperator, getStartPosition parseState 2) ||> report
                             
                             Plus($1, exVal)
                          }
@@ -342,37 +320,20 @@ binaryOperator:
 
 arguments:
     | parens argumentSet parens %prec funcPriority  { 
-                                  checkBalancedParen $1 $3 ParenToken.LCURLY ParenToken.RCURLY parseState
+                                  checkBalancedParen ($1, getStartPosition parseState 1) ($3, getStartPosition parseState 3) ParenToken.LCURLY ParenToken.RCURLY 
                                   Some($2) 
                                 }
     | parens parens             {
-                                  checkBalancedParen $1 $2 ParenToken.LCURLY ParenToken.RCURLY parseState
+                                  checkBalancedParen ($1, getStartPosition parseState 1) ($2, getStartPosition parseState 2) ParenToken.LCURLY ParenToken.RCURLY 
                                   None 
                                 }
 
 argumentSet:
     | expression %prec argSetPriority     { [$1] }
 	| argumentSet COMMA expression %prec argSetPriority { $3::$1 }
-	//
-	| argumentSet error expression %prec errorRule {
-                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-                                       let errorMsg = sprintf "Unexpected symbol: %s. Comma symbol required" (new String(lexbuf.Lexeme))
-                                       let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
-                                       errorLogger.ReportError(error)
-                                       
-                                       $3::$1
-                                   }
-    | argumentSet expr %prec errorRule {
-                                       let lexeme, sPos, ePos, exVal = $2
-                                       let errorMsg = "Expected comma symbol"
-                                       let error = Error(errorMsg, {Line = sPos; Column = ePos})
-                                       errorLogger.ReportError(error)
-                                       
-                                       exVal::$1
-                                   }
 
 expr:
-    | expression %prec errorRule {
+    | expression %prec expressionOverAll {
                      let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                      let posis = parseState.GetInput(1)
                      let posix = parseState.InputStartPosition(1)
@@ -380,7 +341,6 @@ expr:
                  }
 
 recover: 
-    //| error %prec recoverRule { 
     | error %prec recoverRule { 
                  let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                  (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
@@ -394,32 +354,37 @@ parens:
 
 errorRule:
     | SLASH ID arguments %prec loose_closing_paren      {
-                                                          report parseState (sprintf "Undefined function %s" $2)
+                                                          (ErrorTextFormatter.UnexpectedFunctionName $2, getStartPosition parseState 2) ||> report
                                                           Int(1)
                                                         }
     | SLASH ID %prec loose_closing_paren      {
-                                                report parseState (sprintf "Undefined function %s" $2)
+                                                (ErrorTextFormatter.UnexpectedFunctionName $2, getStartPosition parseState 2) ||> report
                                                 Int(1)
                                               }
     | SLASH recover arguments %prec loose_closing_paren {
                                                 let lexeme, sPos, ePos = $2
-                                                report parseState (sprintf "Undefined function %s" lexeme)
+                                                let posix = getStartPosition parseState 2
+                                                (ErrorTextFormatter.UnexpectedFunctionName lexeme, getStartPosition parseState 2) ||> report
                                                 Int(1)
                                               }
     | SLASH recover %prec loose_closing_paren {
                                                 let lexeme, sPos, ePos = $2
-                                                report parseState (sprintf "Undefined function %s" lexeme)
+                                                (ErrorTextFormatter.UnexpectedFunctionName lexeme, getStartPosition parseState 2) ||> report
                                                 Int(1)
                                               }
+    | SLASH %prec loose_closing_paren  { 
+                                         (ErrorTextFormatter.UnexpectedSlash, getStartPosition parseState 1) ||> report
+                                         Int(1)
+                                       }
     | arguments  %prec loose_closing_paren  {
-                                              report parseState "LCURLY RCURLY expression"
+                                              (ErrorTextFormatter.InvalidLRBracketExpression, getStartPosition parseState 1) ||> report
                                               match $1 with | Some(x) -> x.Head | None -> Int(1)
                                             }
     | expression parens %prec loose_closing_paren {
-                         report parseState (sprintf "Unmatched right %s" ($2.ToString()))
+                         (ErrorTextFormatter.UnmatchedRightBracket $2, getStartPosition parseState 2) ||> report
                          $1
                        }
 	| parens expression %prec loose_closing_paren {
-                                                    report parseState (sprintf "Unmatched left %s" ($1.ToString()))
+                                                    (ErrorTextFormatter.UnmatchedLeftBracket $1, getStartPosition parseState 1) ||> report
                                                     $2
                                                   }

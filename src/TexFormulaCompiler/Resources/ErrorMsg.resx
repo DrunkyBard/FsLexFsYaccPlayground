@@ -130,13 +130,10 @@
     <value>Invalid curly braced expression.</value>
   </data>
   <data name="MaybeMissingOps" xml:space="preserve">
-    <value>Two expression detected. Maybe missing binary operation?</value>
+    <value>Two expression detected. Maybe missing binary operator?</value>
   </data>
   <data name="MissingCaret" xml:space="preserve">
     <value>Missing '^' symbol.</value>
-  </data>
-  <data name="MissingComma" xml:space="preserve">
-    <value>Missing comma symbol.</value>
   </data>
   <data name="MissingDiff" xml:space="preserve">
     <value>INTEGRAL function should have differential variable. For example: '\INT_{1}^{2}{x} d{x}'.</value>
@@ -158,6 +155,9 @@
   </data>
   <data name="UnexpectedFunc" xml:space="preserve">
     <value>Unexpected function name: '{0}'.</value>
+  </data>
+  <data name="UnexpectedSlash" xml:space="preserve">
+    <value>Unexpected '\' symbol.</value>
   </data>
   <data name="UnmatchedLBracket" xml:space="preserve">
     <value>Unmatched left '{0}' bracket.</value>

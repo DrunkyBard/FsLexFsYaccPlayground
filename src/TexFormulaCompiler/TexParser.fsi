@@ -81,10 +81,13 @@ type nonTerminalId =
     | NONTERM_start
     | NONTERM_expression
     | NONTERM_constant
+    | NONTERM_sumPrefix
     | NONTERM_sum
+    | NONTERM_prodPrefix
     | NONTERM_prod
     | NONTERM_fact
     | NONTERM_power
+    | NONTERM_fracPrefix
     | NONTERM_frac
     | NONTERM_integralPrefix
     | NONTERM_integral
