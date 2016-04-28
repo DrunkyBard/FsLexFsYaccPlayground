@@ -5,8 +5,14 @@ open TexParser
 open System
 open Microsoft.FSharp.Text.Lexing
 open System.Text
+open ErrorHandling
 
 let lexeme = LexBuffer<_>.LexemeString
+let mutable errorLogger = Unchecked.defaultof<ErrorLogger>
+
+let report (lexbuf: LexBuffer<char>) msg = 
+    let error = Error(msg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
+    errorLogger.ReportError(error)
 }
 
 let plus = "+"
@@ -81,10 +87,17 @@ rule lex = parse
 	| "d"           { diff lexbuf }
 	| "e"           { EULERNUM }
 	| "\\pi"        { PI }
-	| "[||]"        { failwithf "Empty ref value at pos: %A" (lexbuf.EndPos.Column-2) }
+	| "[||]"        { 
+                      report lexbuf ErrorTextFormatter.EmptyRef
+                      lex lexbuf
+                    }
 	| "[|"          { domainSpecificSValue (new StringBuilder()) (lexbuf.EndPos.Column) lexbuf }
 	| "[||"         { domainSpecificMValue (new StringBuilder()) [] false (lexbuf.EndPos.Column) lexbuf }
 	| identifier    { ID(lexeme lexbuf) }
+    | _             { 
+                      report lexbuf (ErrorTextFormatter.UnexpectedSymbol (new String(lexbuf.Lexeme)))
+                      lex lexbuf
+                    }
 	| eof			{ EOF }
 
 and diff = parse
@@ -97,7 +110,9 @@ and domainSpecificSValue s dsPos = parse
     | "|]"   { 
                  let s' = s.ToString()
 
-                 if String.IsNullOrWhiteSpace(s') then failwithf "Empty ref value at pos: %A" lexbuf.StartPos.Column
+                 if String.IsNullOrWhiteSpace(s') then 
+                   report lexbuf (ErrorTextFormatter.UnexpectedSymbol (new String(lexbuf.Lexeme)))
+                   INT(1)
                  else SREFVAL(s', dsPos)
              }
     | _      { domainSpecificSValue (s.Append(lexeme lexbuf)) dsPos lexbuf  }
@@ -107,15 +122,24 @@ and domainSpecificMValue s vals commaSeparated dsPos = parse
                  let lastVal = s.ToString()
 
                  match List.length vals, commaSeparated, String.IsNullOrWhiteSpace(lastVal) with
-                     | (x, true, _) | (x, false, true) when x>0 -> failwithf "Unexpected comma symbol at pos: %A" (dsPos-1)
-                     | (_, _, true) -> failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
+                     | (x, true, _) | (x, false, true) when x>0 -> 
+                           report lexbuf ErrorTextFormatter.UnexpectedRefComma
+                           INT(1)
+                           //failwithf "Unexpected comma symbol at pos: %A" (dsPos-1)
+                     | (_, _, true) -> 
+                           report lexbuf ErrorTextFormatter.EmptyRef
+                           INT(1)
+                           //failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
                      | (_, false, _) -> (lastVal, dsPos)::vals |> List.rev |> MREFVAL
              }    
     | _ ","  { 
                  let matched = lexeme lexbuf
                  let matched = matched.Substring(0, matched.Length-1)
 
-                 if String.IsNullOrWhiteSpace(matched) then failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
+                 if String.IsNullOrWhiteSpace(matched) then 
+                   report lexbuf ErrorTextFormatter.EmptyRef
+                   domainSpecificMValue (new StringBuilder()) vals true lexbuf.EndPos.Column lexbuf
+                   //failwithf "Empty multi value at pos: %A" lexbuf.StartPos.Column
                  else
                    domainSpecificMValue (new StringBuilder()) ((s.Append(matched).ToString(), dsPos)::vals) true lexbuf.EndPos.Column lexbuf
              }

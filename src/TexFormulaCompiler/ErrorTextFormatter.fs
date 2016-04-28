@@ -38,3 +38,9 @@ type ErrorTextFormatter =
     static member InvalidLRBracketExpression = ResX.ErrorMsg.InvalidLRBracketExpr
 
     static member UnexpectedSlash = ResX.ErrorMsg.UnexpectedSlash
+
+    static member UnexpectedSymbol (symbol: string) = String.Format(ResX.ErrorMsg.UnexpectedSymbol, symbol)
+
+    static member EmptyRef = ResX.ErrorMsg.EmptyRef
+
+    static member UnexpectedRefComma = ResX.ErrorMsg.UnexpectedRefComma

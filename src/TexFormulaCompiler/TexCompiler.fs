@@ -11,6 +11,7 @@ type TexCompiler(domainSpecificAnalyzer: DomainSpecificContext -> obj, dslSValue
     member this.Compile src = 
         let errorLogger = ErrorLogger(fun s -> Console.Error.WriteLine(s))
         TexParser.domainSpecificAnalyzer <- domainSpecificAnalyzer
+        TexLexer.errorLogger <- errorLogger
         TexParser.errorLogger <- errorLogger
         let lexbuf = LexBuffer<char>.FromString src
         let texCodeGen = TexCodeGenerator(dslSValueInterpreter, dslMValueInterpreter)

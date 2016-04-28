@@ -3,7 +3,7 @@ module TexParser
 #nowarn "64";; // turn off warnings that type variables used in production annotations are instantiated to concrete type
 open Microsoft.FSharp.Text.Lexing
 open Microsoft.FSharp.Text.Parsing.ParseHelpers
-# 1 "../../../TexFormulaCompiler/TexParser.fsy"
+# 1 "TexParser.fsy"
 
 open TexAst
 open System
@@ -35,12 +35,6 @@ let analyzeDomainSpecificSources sources =
     analyzeDomainSpecificSourcesInternal sources [] 
     |> List.rev 
     |> MRefValue
-
-//let report (parseState : IParseState) sym = 
-//    let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
-//    let errorMsg = sprintf "Unexpected symbol: %s. %s symbol required" (new String(lexbuf.Lexeme)) sym
-//    let error = Error(errorMsg, {Line = lexbuf.StartPos.Line; Column = lexbuf.StartPos.Column})
-//    errorLogger.ReportError(error)
 
 let report msg pos = 
     let error = Error(msg, pos)
@@ -90,7 +84,7 @@ let getEndPosition (parseState: IParseState) position =
     {Line = pos.Line; Column = pos.Column}
 
 
-# 93 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 87 "TexParser.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
   | EOF
@@ -477,7 +471,7 @@ let _fsyacc_reductionSymbolCounts = [|1us; 2us; 1us; 1us; 1us; 1us; 2us; 1us; 2u
 let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 3us; 3us; 4us; 4us; 5us; 5us; 6us; 6us; 7us; 7us; 8us; 9us; 10us; 10us; 11us; 11us; 11us; 11us; 12us; 12us; 13us; 14us; 14us; 15us; 15us; 16us; 16us; 17us; 17us; 18us; 18us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 19us; 20us; 20us; 21us; 21us; 22us; 22us; 22us; 22us; 22us; 23us; 23us; 23us; 23us; 23us; 23us; 23us; 23us; 23us; 23us; 23us; 24us; 24us; 24us; 24us; 24us; 25us; 25us; 26us; 26us; 27us; 28us; 29us; 29us; 29us; 29us; 30us; 30us; 30us; 30us; 30us; 30us; 30us; 30us; |]
 let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16385us; 16386us; 65535us; 16388us; 16389us; 65535us; 16390us; 16391us; 65535us; 16392us; 16394us; 16395us; 65535us; 16396us; 16398us; 65535us; 65535us; 16399us; 16400us; 16401us; 65535us; 65535us; 16402us; 16403us; 16406us; 16407us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16408us; 16409us; 16411us; 16412us; 16413us; 16414us; 16415us; 65535us; 65535us; 65535us; 16416us; 16417us; 16418us; 16419us; 16420us; 16421us; 65535us; 65535us; 65535us; 16423us; 16424us; 16425us; 16426us; 16427us; 16428us; 16429us; 16430us; 16431us; 16432us; 16433us; 16434us; 16435us; 16436us; 16437us; 65535us; 65535us; 65535us; 65535us; 16439us; 16440us; 65535us; 16441us; 65535us; 65535us; 16442us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16453us; 16454us; 16456us; 16457us; 16458us; 65535us; 65535us; 65535us; 65535us; 65535us; 16459us; 65535us; 16464us; 16465us; 16466us; 16467us; 16468us; 65535us; 16469us; 65535us; 16471us; |]
 let _fsyacc_reductions ()  =    [| 
-# 480 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 474 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : TexAst.Expr)) in
             Microsoft.FSharp.Core.Operators.box
@@ -486,171 +480,169 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 489 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 483 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 127 "../../../TexFormulaCompiler/TexParser.fsy"
+# 116 "TexParser.fsy"
                                          _1 
                    )
-# 127 "../../../TexFormulaCompiler/TexParser.fsy"
+# 116 "TexParser.fsy"
                  : TexAst.Expr));
-# 500 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 494 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'binaryExpression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 130 "../../../TexFormulaCompiler/TexParser.fsy"
+# 119 "TexParser.fsy"
                                                    _1 
                    )
-# 130 "../../../TexFormulaCompiler/TexParser.fsy"
+# 119 "TexParser.fsy"
                  : 'expression));
-# 511 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 505 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'highPriorityFunction)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 131 "../../../TexFormulaCompiler/TexParser.fsy"
+# 120 "TexParser.fsy"
                                                  _1 
                    )
-# 131 "../../../TexFormulaCompiler/TexParser.fsy"
+# 120 "TexParser.fsy"
                  : 'expression));
-# 522 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 516 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 135 "../../../TexFormulaCompiler/TexParser.fsy"
+# 124 "TexParser.fsy"
                                    Constant(Pi) 
                    )
-# 135 "../../../TexFormulaCompiler/TexParser.fsy"
+# 124 "TexParser.fsy"
                  : 'constant));
-# 532 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 526 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 136 "../../../TexFormulaCompiler/TexParser.fsy"
+# 125 "TexParser.fsy"
                                    Constant(E) 
                    )
-# 136 "../../../TexFormulaCompiler/TexParser.fsy"
+# 125 "TexParser.fsy"
                  : 'constant));
-# 542 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 536 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 139 "../../../TexFormulaCompiler/TexParser.fsy"
+# 128 "TexParser.fsy"
                                       
                    )
-# 139 "../../../TexFormulaCompiler/TexParser.fsy"
+# 128 "TexParser.fsy"
                  : 'sumPrefix));
-# 552 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 546 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 140 "../../../TexFormulaCompiler/TexParser.fsy"
+# 129 "TexParser.fsy"
                                        (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.SUM, getStartPosition parseState 1) ||> report 
                    )
-# 140 "../../../TexFormulaCompiler/TexParser.fsy"
+# 129 "TexParser.fsy"
                  : 'sumPrefix));
-# 562 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 556 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sumPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 143 "../../../TexFormulaCompiler/TexParser.fsy"
+# 132 "TexParser.fsy"
                                                  
                                                   let args = checkForArguments TokenInternal.SUM _2 (getStartPosition parseState 2)
                                                   Sum(List.rev args)
                                                 
                    )
-# 143 "../../../TexFormulaCompiler/TexParser.fsy"
+# 132 "TexParser.fsy"
                  : 'sum));
-# 577 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 571 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sumPrefix)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 147 "../../../TexFormulaCompiler/TexParser.fsy"
+# 136 "TexParser.fsy"
                                       
                                  (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.SUM, getEndPosition parseState 1) ||> report
-                                 //report parseState "SUM HAS NO args"
                                  Sum([Int(1)])
                                
                    )
-# 147 "../../../TexFormulaCompiler/TexParser.fsy"
+# 136 "TexParser.fsy"
                  : 'sum));
-# 592 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 585 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 154 "../../../TexFormulaCompiler/TexParser.fsy"
+# 142 "TexParser.fsy"
                                        
                    )
-# 154 "../../../TexFormulaCompiler/TexParser.fsy"
+# 142 "TexParser.fsy"
                  : 'prodPrefix));
-# 602 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 595 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 155 "../../../TexFormulaCompiler/TexParser.fsy"
+# 143 "TexParser.fsy"
                                         (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.PROD, getStartPosition parseState 1) ||> report 
                    )
-# 155 "../../../TexFormulaCompiler/TexParser.fsy"
+# 143 "TexParser.fsy"
                  : 'prodPrefix));
-# 612 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 605 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'prodPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 158 "../../../TexFormulaCompiler/TexParser.fsy"
+# 146 "TexParser.fsy"
                                                    
                                                    let args = checkForArguments TokenInternal.PROD _2 (getStartPosition parseState 2)
                                                    Prod(List.rev args) 
                                                  
                    )
-# 158 "../../../TexFormulaCompiler/TexParser.fsy"
+# 146 "TexParser.fsy"
                  : 'prod));
-# 627 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 620 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'prodPrefix)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 162 "../../../TexFormulaCompiler/TexParser.fsy"
+# 150 "TexParser.fsy"
                                                   
                                                    (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.PROD, getEndPosition parseState 1) ||> report
-                                                   //report parseState "PROD HAS NO args"
                                                    Prod([Int(1)])
                                                  
                    )
-# 162 "../../../TexFormulaCompiler/TexParser.fsy"
+# 150 "TexParser.fsy"
                  : 'prod));
-# 642 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 634 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'highPriorityFunction)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 169 "../../../TexFormulaCompiler/TexParser.fsy"
+# 156 "TexParser.fsy"
                                                       Fact(_1) 
                    )
-# 169 "../../../TexFormulaCompiler/TexParser.fsy"
+# 156 "TexParser.fsy"
                  : 'fact));
-# 653 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 645 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'intCaret)) in
@@ -658,36 +650,36 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 172 "../../../TexFormulaCompiler/TexParser.fsy"
+# 159 "TexParser.fsy"
                                                            
                                                         let arg1 = checkForArgument TokenInternal.POW _1 (getStartPosition parseState 1)
                                                         let arg2 = checkForArgument TokenInternal.POW _3 (getStartPosition parseState 3)
                                                         Pow(arg1, arg2) 
                                                       
                    )
-# 172 "../../../TexFormulaCompiler/TexParser.fsy"
+# 159 "TexParser.fsy"
                  : 'power));
-# 670 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 662 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 179 "../../../TexFormulaCompiler/TexParser.fsy"
+# 166 "TexParser.fsy"
                                        
                    )
-# 179 "../../../TexFormulaCompiler/TexParser.fsy"
+# 166 "TexParser.fsy"
                  : 'fracPrefix));
-# 680 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 672 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 180 "../../../TexFormulaCompiler/TexParser.fsy"
+# 167 "TexParser.fsy"
                                         (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.FRAC, getStartPosition parseState 1) ||> report 
                    )
-# 180 "../../../TexFormulaCompiler/TexParser.fsy"
+# 167 "TexParser.fsy"
                  : 'fracPrefix));
-# 690 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 682 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'fracPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
@@ -695,85 +687,82 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 183 "../../../TexFormulaCompiler/TexParser.fsy"
+# 170 "TexParser.fsy"
                                                               
                                                               let arg1 = checkForArgument TokenInternal.FRAC _2 (getStartPosition parseState 2)
                                                               let arg2 = checkForArgument TokenInternal.FRAC _3 (getStartPosition parseState 3)
                                                               Div(arg1, arg2) 
                                                             
                    )
-# 183 "../../../TexFormulaCompiler/TexParser.fsy"
+# 170 "TexParser.fsy"
                  : 'frac));
-# 707 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 699 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'fracPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 188 "../../../TexFormulaCompiler/TexParser.fsy"
+# 175 "TexParser.fsy"
                                                           
                                                               let arg = checkForArgument TokenInternal.FRAC _2 (getStartPosition parseState 2)
                                                               (ErrorTextFormatter.FracMissingSecondArg, getEndPosition parseState 2) ||> report
-                                                              //report parseState "FRAC Missing second arg!"
                                                               Div(arg, Int(1))
                                                             
                    )
-# 188 "../../../TexFormulaCompiler/TexParser.fsy"
+# 175 "TexParser.fsy"
                  : 'frac));
-# 724 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 715 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'fracPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 194 "../../../TexFormulaCompiler/TexParser.fsy"
+# 180 "TexParser.fsy"
                                                              
                                                               let arg = checkForArgument TokenInternal.FRAC _2 (getStartPosition parseState 2)
                                                               (ErrorTextFormatter.FracMissingSecondArg, getEndPosition parseState 2) ||> report
-                                                              //report parseState "FRAC Missing second arg"
                                                               Div(arg, Int(1))
                                                             
                    )
-# 194 "../../../TexFormulaCompiler/TexParser.fsy"
+# 180 "TexParser.fsy"
                  : 'frac));
-# 741 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 731 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'fracPrefix)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 200 "../../../TexFormulaCompiler/TexParser.fsy"
+# 185 "TexParser.fsy"
                                                           
                                                               (ErrorTextFormatter.FunctionHasNoParameters TokenInternal.FRAC, getEndPosition parseState 1) ||> report
-                                                              //report parseState "FRAC HAS NO args"
                                                               Div(Int(1), Int(1))
                                                             
                    )
-# 200 "../../../TexFormulaCompiler/TexParser.fsy"
+# 185 "TexParser.fsy"
                  : 'frac));
-# 756 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 745 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 207 "../../../TexFormulaCompiler/TexParser.fsy"
+# 191 "TexParser.fsy"
                                            
                    )
-# 207 "../../../TexFormulaCompiler/TexParser.fsy"
+# 191 "TexParser.fsy"
                  : 'integralPrefix));
-# 766 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 755 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 208 "../../../TexFormulaCompiler/TexParser.fsy"
+# 192 "TexParser.fsy"
                                       (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.INTEGRAL, getStartPosition parseState 1) ||> report 
                    )
-# 208 "../../../TexFormulaCompiler/TexParser.fsy"
+# 192 "TexParser.fsy"
                  : 'integralPrefix));
-# 776 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 765 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'integralPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'intUnderscore)) in
@@ -785,7 +774,7 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 211 "../../../TexFormulaCompiler/TexParser.fsy"
+# 195 "TexParser.fsy"
                                                                                                          
                                            let arg1 = checkForArgument TokenInternal.INTEGRAL _6 (getStartPosition parseState 6)
                                            let arg2 = checkForArgument TokenInternal.INTEGRAL _3 (getStartPosition parseState 3)
@@ -793,336 +782,336 @@ let _fsyacc_reductions ()  =    [|
                                            Integral(arg1, _7, arg2, arg3) 
                                          
                    )
-# 211 "../../../TexFormulaCompiler/TexParser.fsy"
+# 195 "TexParser.fsy"
                  : 'integral));
-# 798 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 787 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 219 "../../../TexFormulaCompiler/TexParser.fsy"
+# 203 "TexParser.fsy"
                                   _1 
                    )
-# 219 "../../../TexFormulaCompiler/TexParser.fsy"
+# 203 "TexParser.fsy"
                  : 'intDiff));
-# 809 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 798 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 220 "../../../TexFormulaCompiler/TexParser.fsy"
+# 204 "TexParser.fsy"
                                   
                                   (ErrorTextFormatter.MissingDiffSyntax, getStartPosition parseState 1) ||> report
                                   "x"
                                 
                    )
-# 220 "../../../TexFormulaCompiler/TexParser.fsy"
+# 204 "TexParser.fsy"
                  : 'intDiff));
-# 822 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 811 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 226 "../../../TexFormulaCompiler/TexParser.fsy"
+# 210 "TexParser.fsy"
                                   
                    )
-# 226 "../../../TexFormulaCompiler/TexParser.fsy"
+# 210 "TexParser.fsy"
                  : 'intCaret));
-# 832 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 821 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 227 "../../../TexFormulaCompiler/TexParser.fsy"
+# 211 "TexParser.fsy"
                                                   (ErrorTextFormatter.MissingCaretSymbol, getStartPosition parseState 1) ||> report 
                    )
-# 227 "../../../TexFormulaCompiler/TexParser.fsy"
+# 211 "TexParser.fsy"
                  : 'intCaret));
-# 842 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 831 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 229 "../../../TexFormulaCompiler/TexParser.fsy"
+# 213 "TexParser.fsy"
                                        
                    )
-# 229 "../../../TexFormulaCompiler/TexParser.fsy"
+# 213 "TexParser.fsy"
                  : 'intUnderscore));
-# 852 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 841 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 230 "../../../TexFormulaCompiler/TexParser.fsy"
+# 214 "TexParser.fsy"
                                                   (ErrorTextFormatter.MissingUnderscoreSymbol, getStartPosition parseState 1) ||> report 
                    )
-# 230 "../../../TexFormulaCompiler/TexParser.fsy"
+# 214 "TexParser.fsy"
                  : 'intUnderscore));
-# 862 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 851 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'refValue)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 236 "../../../TexFormulaCompiler/TexParser.fsy"
+# 220 "TexParser.fsy"
                                                                 _1 
                    )
-# 236 "../../../TexFormulaCompiler/TexParser.fsy"
+# 220 "TexParser.fsy"
                  : 'refPattern));
-# 873 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 862 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'refValue)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 237 "../../../TexFormulaCompiler/TexParser.fsy"
+# 221 "TexParser.fsy"
                                                              _4 
                    )
-# 237 "../../../TexFormulaCompiler/TexParser.fsy"
+# 221 "TexParser.fsy"
                  : 'refPattern));
-# 884 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 873 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string*int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 240 "../../../TexFormulaCompiler/TexParser.fsy"
+# 224 "TexParser.fsy"
                                           analyzeDomainSpecificSingleSource (fst _1) (snd _1) |> DsAst 
                    )
-# 240 "../../../TexFormulaCompiler/TexParser.fsy"
+# 224 "TexParser.fsy"
                  : 'refValue));
-# 895 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 884 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : (string*int) list)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 241 "../../../TexFormulaCompiler/TexParser.fsy"
+# 225 "TexParser.fsy"
                                        analyzeDomainSpecificSources _1 |> DsAst 
                    )
-# 241 "../../../TexFormulaCompiler/TexParser.fsy"
+# 225 "TexParser.fsy"
                  : 'refValue));
-# 906 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 895 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 244 "../../../TexFormulaCompiler/TexParser.fsy"
+# 228 "TexParser.fsy"
                                                         Int(_1) 
                    )
-# 244 "../../../TexFormulaCompiler/TexParser.fsy"
+# 228 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 917 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 906 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 245 "../../../TexFormulaCompiler/TexParser.fsy"
+# 229 "TexParser.fsy"
                                                         Float(_1) 
                    )
-# 245 "../../../TexFormulaCompiler/TexParser.fsy"
+# 229 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 928 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 917 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 246 "../../../TexFormulaCompiler/TexParser.fsy"
+# 230 "TexParser.fsy"
                                                         Float(Double.PositiveInfinity) 
                    )
-# 246 "../../../TexFormulaCompiler/TexParser.fsy"
+# 230 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 938 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 927 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 247 "../../../TexFormulaCompiler/TexParser.fsy"
+# 231 "TexParser.fsy"
                                                         _2 
                    )
-# 247 "../../../TexFormulaCompiler/TexParser.fsy"
+# 231 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 949 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 938 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'trigonometry)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 248 "../../../TexFormulaCompiler/TexParser.fsy"
+# 232 "TexParser.fsy"
                                                      _1 
                    )
-# 248 "../../../TexFormulaCompiler/TexParser.fsy"
+# 232 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 960 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 949 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sum)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 249 "../../../TexFormulaCompiler/TexParser.fsy"
+# 233 "TexParser.fsy"
                                                      _1 
                    )
-# 249 "../../../TexFormulaCompiler/TexParser.fsy"
+# 233 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 971 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 960 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'prod)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 250 "../../../TexFormulaCompiler/TexParser.fsy"
+# 234 "TexParser.fsy"
                                                      _1 
                    )
-# 250 "../../../TexFormulaCompiler/TexParser.fsy"
+# 234 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 982 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 971 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'fact)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 251 "../../../TexFormulaCompiler/TexParser.fsy"
+# 235 "TexParser.fsy"
                                                      _1 
                    )
-# 251 "../../../TexFormulaCompiler/TexParser.fsy"
+# 235 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 993 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 982 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'integral)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 252 "../../../TexFormulaCompiler/TexParser.fsy"
+# 236 "TexParser.fsy"
                                                      _1 
                    )
-# 252 "../../../TexFormulaCompiler/TexParser.fsy"
+# 236 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1004 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 993 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'constant)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 253 "../../../TexFormulaCompiler/TexParser.fsy"
+# 237 "TexParser.fsy"
                                                      _1 
                    )
-# 253 "../../../TexFormulaCompiler/TexParser.fsy"
+# 237 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1015 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1004 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'power)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 254 "../../../TexFormulaCompiler/TexParser.fsy"
+# 238 "TexParser.fsy"
                                                         _1 
                    )
-# 254 "../../../TexFormulaCompiler/TexParser.fsy"
+# 238 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1026 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1015 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'frac)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 255 "../../../TexFormulaCompiler/TexParser.fsy"
+# 239 "TexParser.fsy"
                                                         _1 
                    )
-# 255 "../../../TexFormulaCompiler/TexParser.fsy"
+# 239 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1037 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1026 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'refPattern)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 257 "../../../TexFormulaCompiler/TexParser.fsy"
+# 241 "TexParser.fsy"
                                                      _1 
                    )
-# 257 "../../../TexFormulaCompiler/TexParser.fsy"
+# 241 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1048 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1037 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 258 "../../../TexFormulaCompiler/TexParser.fsy"
+# 242 "TexParser.fsy"
                                                      Var(_1) 
                    )
-# 258 "../../../TexFormulaCompiler/TexParser.fsy"
+# 242 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1059 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1048 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'errorRule)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 259 "../../../TexFormulaCompiler/TexParser.fsy"
+# 243 "TexParser.fsy"
                                                         _1 
                    )
-# 259 "../../../TexFormulaCompiler/TexParser.fsy"
+# 243 "TexParser.fsy"
                  : 'highPriorityFunction));
-# 1070 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1059 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 263 "../../../TexFormulaCompiler/TexParser.fsy"
+# 247 "TexParser.fsy"
                                       
                    )
-# 263 "../../../TexFormulaCompiler/TexParser.fsy"
+# 247 "TexParser.fsy"
                  : 'sinPrefix));
-# 1080 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1069 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 264 "../../../TexFormulaCompiler/TexParser.fsy"
+# 248 "TexParser.fsy"
                                        (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.SIN, getStartPosition parseState 1) ||> report 
                    )
-# 264 "../../../TexFormulaCompiler/TexParser.fsy"
+# 248 "TexParser.fsy"
                  : 'sinPrefix));
-# 1090 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1079 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 267 "../../../TexFormulaCompiler/TexParser.fsy"
+# 251 "TexParser.fsy"
                                       
                    )
-# 267 "../../../TexFormulaCompiler/TexParser.fsy"
+# 251 "TexParser.fsy"
                  : 'cosPrefix));
-# 1100 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1089 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 268 "../../../TexFormulaCompiler/TexParser.fsy"
+# 252 "TexParser.fsy"
                                        (ErrorTextFormatter.FunctionHasNoSlashSymbol TokenInternal.COS, getStartPosition parseState 1) ||> report 
                    )
-# 268 "../../../TexFormulaCompiler/TexParser.fsy"
+# 252 "TexParser.fsy"
                  : 'cosPrefix));
-# 1110 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1099 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sinPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 271 "../../../TexFormulaCompiler/TexParser.fsy"
+# 255 "TexParser.fsy"
                                                                
                                                                   let arg = checkForArgument TokenInternal.SIN _2 (getStartPosition parseState 2)
                                                                   Sin(arg, Int(1)) 
                                                                 
                    )
-# 271 "../../../TexFormulaCompiler/TexParser.fsy"
+# 255 "TexParser.fsy"
                  : 'trigonometry));
-# 1125 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1114 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sinPrefix)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
@@ -1130,16 +1119,16 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 275 "../../../TexFormulaCompiler/TexParser.fsy"
+# 259 "TexParser.fsy"
                                                                   
                                                                   let arg1 = checkForArgument TokenInternal.SIN _3 (getStartPosition parseState 3)
                                                                   let arg2 = checkForArgument TokenInternal.SIN _4 (getStartPosition parseState 4)
                                                                   Sin(arg1, arg2)
                                                                 
                    )
-# 275 "../../../TexFormulaCompiler/TexParser.fsy"
+# 259 "TexParser.fsy"
                  : 'trigonometry));
-# 1142 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1131 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'sinPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
@@ -1147,7 +1136,7 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 280 "../../../TexFormulaCompiler/TexParser.fsy"
+# 264 "TexParser.fsy"
                                                                   
                                                                   (ErrorTextFormatter.MissingCaretSymbol, getEndPosition parseState 1) ||> report
                                                                   let arg1 = checkForArgument TokenInternal.SIN _2 (getStartPosition parseState 2)
@@ -1155,24 +1144,24 @@ let _fsyacc_reductions ()  =    [|
                                                                   Sin(arg1, arg2)
                                                                 
                    )
-# 280 "../../../TexFormulaCompiler/TexParser.fsy"
+# 264 "TexParser.fsy"
                  : 'trigonometry));
-# 1160 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1149 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'cosPrefix)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 286 "../../../TexFormulaCompiler/TexParser.fsy"
+# 270 "TexParser.fsy"
                                                                   
                                                                   let arg = checkForArgument TokenInternal.COS _2 (getStartPosition parseState 2)
                                                                   Cos(arg, Int(1))
                                                                 
                    )
-# 286 "../../../TexFormulaCompiler/TexParser.fsy"
+# 270 "TexParser.fsy"
                  : 'trigonometry));
-# 1175 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1164 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'cosPrefix)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
@@ -1180,7 +1169,7 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 290 "../../../TexFormulaCompiler/TexParser.fsy"
+# 274 "TexParser.fsy"
                                                                   
                                                                   (ErrorTextFormatter.MissingCaretSymbol, getEndPosition parseState 1) ||> report
                                                                   let arg1 = checkForArgument TokenInternal.COS _3 (getStartPosition parseState 3)
@@ -1188,122 +1177,122 @@ let _fsyacc_reductions ()  =    [|
                                                                   Cos(arg1, arg2)
                                                                 
                    )
-# 290 "../../../TexFormulaCompiler/TexParser.fsy"
+# 274 "TexParser.fsy"
                  : 'trigonometry));
-# 1193 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1182 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 298 "../../../TexFormulaCompiler/TexParser.fsy"
+# 282 "TexParser.fsy"
                                                           Plus(_1, _3) 
                    )
-# 298 "../../../TexFormulaCompiler/TexParser.fsy"
+# 282 "TexParser.fsy"
                  : 'binaryExpression));
-# 1205 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1194 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 299 "../../../TexFormulaCompiler/TexParser.fsy"
+# 283 "TexParser.fsy"
                                                           Sub(_1, _3)  
                    )
-# 299 "../../../TexFormulaCompiler/TexParser.fsy"
+# 283 "TexParser.fsy"
                  : 'binaryExpression));
-# 1217 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1206 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 300 "../../../TexFormulaCompiler/TexParser.fsy"
+# 284 "TexParser.fsy"
                                                           Mul(_1, _3)  
                    )
-# 300 "../../../TexFormulaCompiler/TexParser.fsy"
+# 284 "TexParser.fsy"
                  : 'binaryExpression));
-# 1229 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1218 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 301 "../../../TexFormulaCompiler/TexParser.fsy"
+# 285 "TexParser.fsy"
                                                           Mul(_1, _3)  
                    )
-# 301 "../../../TexFormulaCompiler/TexParser.fsy"
+# 285 "TexParser.fsy"
                  : 'binaryExpression));
-# 1241 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1230 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 302 "../../../TexFormulaCompiler/TexParser.fsy"
+# 286 "TexParser.fsy"
                                                           Div(_1, _3)  
                    )
-# 302 "../../../TexFormulaCompiler/TexParser.fsy"
+# 286 "TexParser.fsy"
                  : 'binaryExpression));
-# 1253 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1242 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 303 "../../../TexFormulaCompiler/TexParser.fsy"
+# 287 "TexParser.fsy"
                                                           Bmod(_1, _3) 
                    )
-# 303 "../../../TexFormulaCompiler/TexParser.fsy"
+# 287 "TexParser.fsy"
                  : 'binaryExpression));
-# 1265 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1254 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 304 "../../../TexFormulaCompiler/TexParser.fsy"
+# 288 "TexParser.fsy"
                                                          Neg(_2)    
                    )
-# 304 "../../../TexFormulaCompiler/TexParser.fsy"
+# 288 "TexParser.fsy"
                  : 'binaryExpression));
-# 1276 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1265 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'binaryOperator)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 306 "../../../TexFormulaCompiler/TexParser.fsy"
+# 290 "TexParser.fsy"
                                                                     
                                                             (ErrorTextFormatter.MissingFirstOperand, getStartPosition parseState 1) ||> report
                                                             Plus(_2, _2)
                                                         
                    )
-# 306 "../../../TexFormulaCompiler/TexParser.fsy"
+# 290 "TexParser.fsy"
                  : 'binaryExpression));
-# 1291 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1280 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'binaryOperator)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 310 "../../../TexFormulaCompiler/TexParser.fsy"
+# 294 "TexParser.fsy"
                                                                        
                                                             (ErrorTextFormatter.MissingSecondOperand, getEndPosition parseState 2) ||> report
                                                             Plus(_1, _1)
                                                         
                    )
-# 310 "../../../TexFormulaCompiler/TexParser.fsy"
+# 294 "TexParser.fsy"
                  : 'binaryExpression));
-# 1306 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1295 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'recover)) in
@@ -1311,22 +1300,22 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 314 "../../../TexFormulaCompiler/TexParser.fsy"
+# 298 "TexParser.fsy"
                                                                            
                                                  (ErrorTextFormatter.MaybeMissingBinaryOperator, getStartPosition parseState 2) ||> report
                                                  Plus(_1, _3)
                                               
                    )
-# 314 "../../../TexFormulaCompiler/TexParser.fsy"
+# 298 "TexParser.fsy"
                  : 'binaryExpression));
-# 1322 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1311 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 318 "../../../TexFormulaCompiler/TexParser.fsy"
+# 302 "TexParser.fsy"
                                                              
                                                  let lexeme, sPos, ePos, exVal = _2
                                                  (ErrorTextFormatter.MaybeMissingBinaryOperator, getStartPosition parseState 2) ||> report
@@ -1334,59 +1323,59 @@ let _fsyacc_reductions ()  =    [|
                                                  Plus(_1, exVal)
                                               
                    )
-# 318 "../../../TexFormulaCompiler/TexParser.fsy"
+# 302 "TexParser.fsy"
                  : 'binaryExpression));
-# 1339 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1328 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 326 "../../../TexFormulaCompiler/TexParser.fsy"
+# 310 "TexParser.fsy"
                                                  
                    )
-# 326 "../../../TexFormulaCompiler/TexParser.fsy"
+# 310 "TexParser.fsy"
                  : 'binaryOperator));
-# 1349 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1338 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 327 "../../../TexFormulaCompiler/TexParser.fsy"
+# 311 "TexParser.fsy"
                                                  
                    )
-# 327 "../../../TexFormulaCompiler/TexParser.fsy"
+# 311 "TexParser.fsy"
                  : 'binaryOperator));
-# 1359 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1348 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 328 "../../../TexFormulaCompiler/TexParser.fsy"
+# 312 "TexParser.fsy"
                                                  
                    )
-# 328 "../../../TexFormulaCompiler/TexParser.fsy"
+# 312 "TexParser.fsy"
                  : 'binaryOperator));
-# 1369 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1358 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 329 "../../../TexFormulaCompiler/TexParser.fsy"
+# 313 "TexParser.fsy"
                                                  
                    )
-# 329 "../../../TexFormulaCompiler/TexParser.fsy"
+# 313 "TexParser.fsy"
                  : 'binaryOperator));
-# 1379 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1368 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 330 "../../../TexFormulaCompiler/TexParser.fsy"
+# 314 "TexParser.fsy"
                                                  
                    )
-# 330 "../../../TexFormulaCompiler/TexParser.fsy"
+# 314 "TexParser.fsy"
                  : 'binaryOperator));
-# 1389 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1378 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'parens)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'argumentSet)) in
@@ -1394,59 +1383,59 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 333 "../../../TexFormulaCompiler/TexParser.fsy"
+# 317 "TexParser.fsy"
                                                                            
                                                        checkBalancedParen (_1, getStartPosition parseState 1) (_3, getStartPosition parseState 3) ParenToken.LCURLY ParenToken.RCURLY 
                                                        Some(_2) 
                                                      
                    )
-# 333 "../../../TexFormulaCompiler/TexParser.fsy"
+# 317 "TexParser.fsy"
                  : 'arguments));
-# 1405 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1394 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'parens)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'parens)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 337 "../../../TexFormulaCompiler/TexParser.fsy"
+# 321 "TexParser.fsy"
                                                       
                                                        checkBalancedParen (_1, getStartPosition parseState 1) (_2, getStartPosition parseState 2) ParenToken.LCURLY ParenToken.RCURLY 
                                                        None 
                                                      
                    )
-# 337 "../../../TexFormulaCompiler/TexParser.fsy"
+# 321 "TexParser.fsy"
                  : 'arguments));
-# 1420 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1409 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 343 "../../../TexFormulaCompiler/TexParser.fsy"
+# 327 "TexParser.fsy"
                                                                  [_1] 
                    )
-# 343 "../../../TexFormulaCompiler/TexParser.fsy"
+# 327 "TexParser.fsy"
                  : 'argumentSet));
-# 1431 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1420 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'argumentSet)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 344 "../../../TexFormulaCompiler/TexParser.fsy"
+# 328 "TexParser.fsy"
                                                                             _3::_1 
                    )
-# 344 "../../../TexFormulaCompiler/TexParser.fsy"
+# 328 "TexParser.fsy"
                  : 'argumentSet));
-# 1443 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1432 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 347 "../../../TexFormulaCompiler/TexParser.fsy"
+# 331 "TexParser.fsy"
                                                                
                                           let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                                           let posis = parseState.GetInput(1)
@@ -1454,98 +1443,98 @@ let _fsyacc_reductions ()  =    [|
                                           (new string(lexbuf.Lexeme), posix.Line, posix.Column, _1) 
                                       
                    )
-# 347 "../../../TexFormulaCompiler/TexParser.fsy"
+# 331 "TexParser.fsy"
                  : 'expr));
-# 1459 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1448 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 355 "../../../TexFormulaCompiler/TexParser.fsy"
+# 339 "TexParser.fsy"
                                                      
                                       let lexbuf = parseState.ParserLocalStore.["LexBuffer"] :?> LexBuffer<char>
                                       (new string(lexbuf.Lexeme), lexbuf.StartPos.Line, lexbuf.StartPos.Column) 
                                   
                    )
-# 355 "../../../TexFormulaCompiler/TexParser.fsy"
+# 339 "TexParser.fsy"
                  : 'recover));
-# 1472 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1461 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 361 "../../../TexFormulaCompiler/TexParser.fsy"
+# 345 "TexParser.fsy"
                                      ParenToken.LPAREN 
                    )
-# 361 "../../../TexFormulaCompiler/TexParser.fsy"
+# 345 "TexParser.fsy"
                  : 'parens));
-# 1482 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1471 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 362 "../../../TexFormulaCompiler/TexParser.fsy"
+# 346 "TexParser.fsy"
                                      ParenToken.RPAREN 
                    )
-# 362 "../../../TexFormulaCompiler/TexParser.fsy"
+# 346 "TexParser.fsy"
                  : 'parens));
-# 1492 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1481 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 363 "../../../TexFormulaCompiler/TexParser.fsy"
+# 347 "TexParser.fsy"
                                      ParenToken.LCURLY 
                    )
-# 363 "../../../TexFormulaCompiler/TexParser.fsy"
+# 347 "TexParser.fsy"
                  : 'parens));
-# 1502 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1491 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 364 "../../../TexFormulaCompiler/TexParser.fsy"
+# 348 "TexParser.fsy"
                                      ParenToken.RCURLY 
                    )
-# 364 "../../../TexFormulaCompiler/TexParser.fsy"
+# 348 "TexParser.fsy"
                  : 'parens));
-# 1512 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1501 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 367 "../../../TexFormulaCompiler/TexParser.fsy"
+# 351 "TexParser.fsy"
                                                                               
                                                                                (ErrorTextFormatter.UnexpectedFunctionName _2, getStartPosition parseState 2) ||> report
                                                                                Int(1)
                                                                              
                    )
-# 367 "../../../TexFormulaCompiler/TexParser.fsy"
+# 351 "TexParser.fsy"
                  : 'errorRule));
-# 1527 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1516 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 371 "../../../TexFormulaCompiler/TexParser.fsy"
+# 355 "TexParser.fsy"
                                                                     
                                                                      (ErrorTextFormatter.UnexpectedFunctionName _2, getStartPosition parseState 2) ||> report
                                                                      Int(1)
                                                                    
                    )
-# 371 "../../../TexFormulaCompiler/TexParser.fsy"
+# 355 "TexParser.fsy"
                  : 'errorRule));
-# 1541 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1530 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'recover)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 375 "../../../TexFormulaCompiler/TexParser.fsy"
+# 359 "TexParser.fsy"
                                                                               
                                                                      let lexeme, sPos, ePos = _2
                                                                      let posix = getStartPosition parseState 2
@@ -1553,82 +1542,82 @@ let _fsyacc_reductions ()  =    [|
                                                                      Int(1)
                                                                    
                    )
-# 375 "../../../TexFormulaCompiler/TexParser.fsy"
+# 359 "TexParser.fsy"
                  : 'errorRule));
-# 1558 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1547 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'recover)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 381 "../../../TexFormulaCompiler/TexParser.fsy"
+# 365 "TexParser.fsy"
                                                                     
                                                                      let lexeme, sPos, ePos = _2
                                                                      (ErrorTextFormatter.UnexpectedFunctionName lexeme, getStartPosition parseState 2) ||> report
                                                                      Int(1)
                                                                    
                    )
-# 381 "../../../TexFormulaCompiler/TexParser.fsy"
+# 365 "TexParser.fsy"
                  : 'errorRule));
-# 1573 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1562 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 386 "../../../TexFormulaCompiler/TexParser.fsy"
+# 370 "TexParser.fsy"
                                                               
                                                               (ErrorTextFormatter.UnexpectedSlash, getStartPosition parseState 1) ||> report
                                                               Int(1)
                                                             
                    )
-# 386 "../../../TexFormulaCompiler/TexParser.fsy"
+# 370 "TexParser.fsy"
                  : 'errorRule));
-# 1586 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1575 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'arguments)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 390 "../../../TexFormulaCompiler/TexParser.fsy"
+# 374 "TexParser.fsy"
                                                                   
                                                                    (ErrorTextFormatter.InvalidLRBracketExpression, getStartPosition parseState 1) ||> report
                                                                    match _1 with | Some(x) -> x.Head | None -> Int(1)
                                                                  
                    )
-# 390 "../../../TexFormulaCompiler/TexParser.fsy"
+# 374 "TexParser.fsy"
                  : 'errorRule));
-# 1600 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1589 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'parens)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 394 "../../../TexFormulaCompiler/TexParser.fsy"
+# 378 "TexParser.fsy"
                                                                         
                                               (ErrorTextFormatter.UnmatchedRightBracket _2, getStartPosition parseState 2) ||> report
                                               _1
                                             
                    )
-# 394 "../../../TexFormulaCompiler/TexParser.fsy"
+# 378 "TexParser.fsy"
                  : 'errorRule));
-# 1615 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1604 "TexParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'parens)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'expression)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 398 "../../../TexFormulaCompiler/TexParser.fsy"
+# 382 "TexParser.fsy"
                                                                      
                                                                          (ErrorTextFormatter.UnmatchedLeftBracket _1, getStartPosition parseState 1) ||> report
                                                                          _2
                                                                        
                    )
-# 398 "../../../TexFormulaCompiler/TexParser.fsy"
+# 382 "TexParser.fsy"
                  : 'errorRule));
 |]
-# 1631 "..\..\..\TexFormulaCompiler\TexParser.fs"
+# 1620 "TexParser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
